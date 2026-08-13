@@ -1,21 +1,20 @@
-# 動態網頁管理與安全驗證功能規格 (Page Management & Security Spec)
+# 動態網頁管理與畫面內嵌功能規格 (Page Management & Web Embedding Spec)
 
 ## Requirement Statements (EARS-style)
 
-- **[REQ-PAGE-01]** The system **SHALL** allow administrators to select one of 3 target sections when publishing a page: **"🌐 網站連結庫 / 公開特教專區" (`public`)**, **"🍎 導師專區" (`teacher`)**, or **"🔒 校內特教業務版面" (`internal`)**.
-- **[REQ-PAGE-02]** Pages assigned to **"🍎 導師專區" (`teacher`)** **SHALL** be dynamically rendered under the "導師專區" section on the Home View.
-- **[REQ-PAGE-03]** The system **SHALL NOT** render any hardcoded static preview cards in the "導師專區" or "校內常用特教表單與個案工具" sections.
-- **[REQ-PAGE-04]** The system **SHALL NOT** provide an "新增網頁" button directly on the front-end Home View; page creation **SHALL** only be accessed via the password-protected Admin Control Panel (`⚙️ 管理控制台`).
-- **[REQ-PAGE-05]** The system **SHALL** enforce password authentication (`8523984`) before granting access to the Admin Control Panel Modal or Internal Special Ed Section.
+- **[REQ-PAGE-01]** The system **SHALL** allow dynamic page contents to render embedded external websites via `<iframe>` HTML tags.
+- **[REQ-PAGE-02]** The Admin Panel Markdown toolbar **SHALL** provide a dedicated button `[ 內嵌網頁 (iframe) ]` to instantly insert high-definition iframe embed code (`<iframe src="https://..." width="100%" height="650px"></iframe>`).
+- **[REQ-PAGE-03]** The system **SHALL** provide an optional "外部跳轉網址 (選填)" (`externalUrl`) field in the Page Creation form.
+- **[REQ-PAGE-04]** If a page has an `externalUrl` specified, clicking the page link in the navigation menu or card grid **SHALL** directly open the target external URL in a new browser tab.
 
 ## Scenarios (BDD Given/When/Then)
 
-### Scenario 1: 發布動態網頁至導師專區
-- **GIVEN** 管理員在控制台開啟「新增特教網頁」表單
-- **WHEN** 管理員填寫標題「身心障礙學生轉介前介入指引」、發布位置選擇「🍎 導師專區 (所有人可瀏覽)」並儲存
-- **THEN** 前台首頁的「導師專區」版面自動即時顯示該篇動態文章圖卡。
+### Scenario 1: 網頁內容嵌入外部網站畫面
+- **GIVEN** 管理員在控制台編輯網頁內容
+- **WHEN** 管理員點擊工具列「內嵌網頁 (iframe)」按鈕，填入 URL `https://special.hlc.edu.tw` 並發布
+- **THEN** 前台打開該網頁時，頁面內包含一個寬 100%、高 650px 的獨立視窗，直接展示目標網站畫面。
 
-### Scenario 2: 前台按鈕清理
-- **GIVEN** 訪客瀏覽首頁「公開特教專區網頁」區塊
-- **WHEN** 畫面載入完成
-- **THEN** 標頭右側不含有任何「⊕ 新增網頁」按鈕。
+### Scenario 2: 設定選單點擊自動跳轉外站
+- **GIVEN** 管理員在【外部跳轉網址 (選填)】填寫 `https://www.set.edu.tw` 並發布
+- **WHEN** 訪客點擊導覽列中的該網頁項目
+- **THEN** 系統直接在新分頁中開啟 `https://www.set.edu.tw` 網站畫面。

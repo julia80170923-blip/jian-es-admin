@@ -113,20 +113,18 @@ const DEFAULT_PRESETS = {
 - **轉介前介入**：普通班導師若發現潛在特殊需求學童，請先進行至少 6 週之轉介前介入觀察。`
     },
     {
-      id: "page-sp-104",
-      title: "校內特教個案管理與測驗工具借閱保管規範",
-      slug: "test-kit-internal",
-      targetSection: "internal", // 🔒 校內特教業務版面
+      id: "page-sp-embed-104",
+      title: "花蓮縣特教專團與專業服務系統 (網頁畫面內嵌範例)",
+      slug: "hlc-special-ed-embed",
+      targetSection: "public",
       category: "特教業務專區",
       isPublished: true,
       updatedAt: "2026-08-13",
-      content: `## 校內測驗工具與個案管理規範 (校內密碼保護文件)
+      content: `## 花蓮縣特教專團與專業服務系統 (即時內嵌視窗)
 
-本文件僅供吉安國小校內特教教師與心評人員查閱。
+以下為「花蓮縣特殊教育資源網」即時內嵌網頁畫面：
 
-### 一、 心理評量工具保管
-- 魏氏兒童智力測驗 (WISC-V) 放置於特教資源辦公室防潮箱。
-- 借閱前請至校內系統登記借用紀錄並於 3 日內歸還歸位。`
+<iframe src="https://special.hlc.edu.tw" width="100%" height="650px" style="width:100%; height:650px; border:1px solid #e2e8f0; border-radius:8px;"></iframe>`
     }
   ]
 };
@@ -262,7 +260,6 @@ function initRouter() {
 function handleRouteChange() {
   let hash = window.location.hash || "#home";
 
-  // 若開著舊有的 #links 路由，自動清除重定向至首頁
   if (hash === "#links") {
     hash = "#home";
     history.replaceState(null, "", "#home");
@@ -308,7 +305,7 @@ function renderHomeView() {
   renderHomePages();
 }
 
-// 導覽列動態下拉選單 (僅顯示 targetSection === 'public' 或 'teacher' 之公開網頁)
+// 導覽列動態下拉選單 (選單點擊若有 externalUrl 則開啟外站)
 function renderNavDropdowns() {
   const publicPublished = appState.pages.filter(p => p.isPublished && (p.targetSection === "public" || p.targetSection === "teacher" || !p.targetSection));
   const resourcePages = publicPublished.filter(p => p.category === "資源班專區");
@@ -317,11 +314,16 @@ function renderNavDropdowns() {
 
   const buildItemsHtml = (pages) => {
     if (pages.length === 0) return `<span class="dropdown-item text-muted">暫無公開頁面</span>`;
-    return pages.map(p => `
-      <a href="#page/${p.slug}" class="dropdown-item">
-        <i data-lucide="file-text"></i> ${escapeHtml(p.title)}
-      </a>
-    `).join("");
+    return pages.map(p => {
+      const href = p.externalUrl ? p.externalUrl : `#page/${p.slug}`;
+      const target = p.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
+      const icon = p.externalUrl ? 'external-link' : 'file-text';
+      return `
+        <a href="${href}" ${target} class="dropdown-item">
+          <i data-lucide="${icon}"></i> ${escapeHtml(p.title)}
+        </a>
+      `;
+    }).join("");
   };
 
   document.getElementById("dropdownMenuResource").innerHTML = buildItemsHtml(resourcePages);
@@ -331,7 +333,7 @@ function renderNavDropdowns() {
   initIcons();
 }
 
-// 首頁數據與統計
+// 首頁數據統計
 function renderHomeStats() {
   document.getElementById("statLinksCount").innerText = appState.links.length;
   document.getElementById("statTeacherPagesCount").innerText = appState.pages.filter(p => p.isPublished && p.targetSection === "teacher").length;
@@ -339,7 +341,7 @@ function renderHomeStats() {
   document.getElementById("statInternalPagesCount").innerText = appState.pages.filter(p => p.targetSection === "internal").length;
 }
 
-// 首頁 4 大核心特教門戶版面
+// 首頁 4 大核心特教門戶
 function renderHomePinnedLinks() {
   const grid = document.getElementById("homePinnedLinksGrid");
   grid.innerHTML = appState.links.map(link => buildLinkCardHtml(link)).join("");
@@ -355,19 +357,25 @@ function renderHomePages() {
   if (teacherPages.length === 0) {
     teacherGrid.innerHTML = `<p class="text-muted" style="grid-column: 1/-1;">目前尚無歸類至導師專區之動態網頁。可於管理控制台新增網頁並選擇「導師專區」。</p>`;
   } else {
-    teacherGrid.innerHTML = teacherPages.map(page => `
-      <div class="page-card shadow-sm border-warning">
-        <div class="page-card-header">
-          <span class="badge badge-accent">🍎 導師專區</span>
-          <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+    teacherGrid.innerHTML = teacherPages.map(page => {
+      const href = page.externalUrl ? page.externalUrl : `#page/${page.slug}`;
+      const target = page.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
+      const btnText = page.externalUrl ? '開啟目標網站 <i data-lucide="external-link"></i>' : '閱讀文章 <i data-lucide="chevron-right"></i>';
+
+      return `
+        <div class="page-card shadow-sm border-warning">
+          <div class="page-card-header">
+            <span class="badge badge-accent">🍎 導師專區</span>
+            <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+          </div>
+          <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
+          <div class="page-card-meta">
+            <span>更新：${page.updatedAt}</span>
+            <a href="${href}" ${target} class="btn btn-outline btn-sm">${btnText}</a>
+          </div>
         </div>
-        <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
-        <div class="page-card-meta">
-          <span>更新：${page.updatedAt}</span>
-          <a href="#page/${page.slug}" class="btn btn-outline btn-sm">閱讀文章 <i data-lucide="chevron-right"></i></a>
-        </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
   // 2. 動態渲染「公開特教專區網頁」
@@ -377,19 +385,25 @@ function renderHomePages() {
   if (publicPages.length === 0) {
     publicGrid.innerHTML = `<p class="text-muted" style="grid-column: 1/-1;">目前尚無公開發布之特教專區網頁。</p>`;
   } else {
-    publicGrid.innerHTML = publicPages.map(page => `
-      <div class="page-card shadow-sm">
-        <div class="page-card-header">
-          <span class="badge badge-primary">${escapeHtml(page.category)}</span>
-          <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+    publicGrid.innerHTML = publicPages.map(page => {
+      const href = page.externalUrl ? page.externalUrl : `#page/${page.slug}`;
+      const target = page.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
+      const btnText = page.externalUrl ? '開啟目標網站 <i data-lucide="external-link"></i>' : '閱讀全文 <i data-lucide="chevron-right"></i>';
+
+      return `
+        <div class="page-card shadow-sm">
+          <div class="page-card-header">
+            <span class="badge badge-primary">${escapeHtml(page.category)}</span>
+            <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+          </div>
+          <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
+          <div class="page-card-meta">
+            <span>更新：${page.updatedAt}</span>
+            <a href="${href}" ${target} class="btn btn-outline btn-sm">${btnText}</a>
+          </div>
         </div>
-        <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
-        <div class="page-card-meta">
-          <span>更新：${page.updatedAt}</span>
-          <a href="#page/${page.slug}" class="btn btn-outline btn-sm">閱讀全文 <i data-lucide="chevron-right"></i></a>
-        </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
   initIcons();
@@ -418,7 +432,7 @@ function buildLinkCardHtml(link) {
   `;
 }
 
-// 4. 校內密碼防護版面邏輯 (Internal Section Module)
+// 4. 校內密碼防護版面邏輯
 function initInternalPasswordModule() {
   const form = document.getElementById("internalPasswordForm");
   const passInput = document.getElementById("internalPasswordInput");
@@ -457,19 +471,25 @@ function renderInternalView() {
     if (internalPages.length === 0) {
       pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁。可在管理控制台新增網頁並選擇「校內特教業務版面」。</p>`;
     } else {
-      pagesGrid.innerHTML = internalPages.map(page => `
-        <div class="page-card shadow-sm border-warning">
-          <div class="page-card-header">
-            <span class="badge badge-accent"><i data-lucide="lock" style="width:12px;"></i> 校內業務</span>
-            <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+      pagesGrid.innerHTML = internalPages.map(page => {
+        const href = page.externalUrl ? page.externalUrl : `#page/${page.slug}`;
+        const target = page.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
+        const btnText = page.externalUrl ? '開啟外部檔案 <i data-lucide="external-link"></i>' : '開啟檔案 <i data-lucide="chevron-right"></i>';
+
+        return `
+          <div class="page-card shadow-sm border-warning">
+            <div class="page-card-header">
+              <span class="badge badge-accent"><i data-lucide="lock" style="width:12px;"></i> 校內業務</span>
+              <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+            </div>
+            <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
+            <div class="page-card-meta">
+              <span>更新：${page.updatedAt}</span>
+              <a href="${href}" ${target} class="btn btn-outline btn-sm">${btnText}</a>
+            </div>
           </div>
-          <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
-          <div class="page-card-meta">
-            <span>更新：${page.updatedAt}</span>
-            <a href="#page/${page.slug}" class="btn btn-outline btn-sm">開啟檔案 <i data-lucide="chevron-right"></i></a>
-          </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
   } else {
     passwordCard.classList.remove("hidden");
@@ -630,26 +650,46 @@ function initAdminModal() {
   document.getElementById("btnCreateNewLink").onclick = () => showLinkForm();
   document.getElementById("btnCancelLinkForm").onclick = () => hideLinkForm();
 
+  // 綁定 Markdown 工具列按鈕
   document.querySelectorAll(".md-btn").forEach(btn => {
     btn.onclick = () => {
       const textarea = document.getElementById("formPageContent");
+      if (btn.id === "btnAddIframeCode") {
+        // 點擊「內嵌網頁 (iframe)」按鈕，彈出網址輸入框
+        const inputUrl = prompt("請輸入要內嵌呈現在網頁中的目標網站 URL：", "https://special.hlc.edu.tw");
+        if (inputUrl && inputUrl.trim() !== "") {
+          const iframeCode = `\n\n<iframe src="${inputUrl.trim()}" width="100%" height="650px" style="width:100%; height:650px; border:1px solid #e2e8f0; border-radius:8px;"></iframe>\n\n`;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const text = textarea.value;
+          textarea.value = text.substring(0, start) + iframeCode + text.substring(end);
+          textarea.focus();
+        }
+        return;
+      }
+
       const prefix = btn.dataset.md;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-      textarea.value = text.substring(0, start) + prefix + text.substring(end);
-      textarea.focus();
+      if (prefix) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + prefix + text.substring(end);
+        textarea.focus();
+      }
     };
   });
 
   document.getElementById("pageForm").onsubmit = (e) => {
     e.preventDefault();
     const targetSec = document.getElementById("formPageTargetSection").value;
+    const extUrl = document.getElementById("formPageExternalUrl").value.trim();
+
     const pageData = {
       id: document.getElementById("formPageId").value,
       title: document.getElementById("formPageTitle").value.trim(),
       slug: document.getElementById("formPageSlug").value.trim().toLowerCase().replace(/\s+/g, "-"),
       targetSection: targetSec,
+      externalUrl: extUrl,
       category: document.getElementById("formPageCategory").value,
       isPublished: document.getElementById("formPagePublished").checked,
       content: document.getElementById("formPageContent").value
@@ -716,7 +756,10 @@ function updateAdminTables() {
 
     return `
       <tr>
-        <td><strong>${escapeHtml(page.title)}</strong></td>
+        <td>
+          <strong>${escapeHtml(page.title)}</strong>
+          ${page.externalUrl ? '<br><span class="domain-text text-primary"><i data-lucide="external-link" style="width:12px;"></i> 外跳: ' + escapeHtml(page.externalUrl) + '</span>' : ''}
+        </td>
         <td>${sectionBadge}</td>
         <td><code>${escapeHtml(page.slug)}</code></td>
         <td><span class="badge">${escapeHtml(page.category)}</span></td>
@@ -754,6 +797,7 @@ function showPageForm(page = null) {
     document.getElementById("formPageTitle").value = page.title;
     document.getElementById("formPageSlug").value = page.slug;
     document.getElementById("formPageTargetSection").value = page.targetSection || "public";
+    document.getElementById("formPageExternalUrl").value = page.externalUrl || "";
     document.getElementById("formPageCategory").value = page.category;
     document.getElementById("formPagePublished").checked = page.isPublished;
     document.getElementById("formPageContent").value = page.content;
@@ -762,6 +806,7 @@ function showPageForm(page = null) {
     document.getElementById("pageForm").reset();
     document.getElementById("formPageId").value = "";
     document.getElementById("formPageTargetSection").value = "public";
+    document.getElementById("formPageExternalUrl").value = "";
     document.getElementById("formPagePublished").checked = true;
   }
 }
@@ -819,7 +864,7 @@ window.deleteAdminLink = function(id) {
 function exportBackupJson() {
   const backupData = {
     appName: "jian-es-special-ed-admin",
-    version: "1.2.0",
+    version: "1.3.0",
     exportedAt: new Date().toISOString(),
     pages: appState.pages,
     links: appState.links

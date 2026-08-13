@@ -6,7 +6,7 @@
   <title>花蓮縣吉安國民小學 - 特教行政資訊網</title>
   <meta name="description" content="花蓮縣吉安國小特教行政網站，提供特教核心連結、導師專區、校內特教業務密碼防護版面與自訂動態特教網頁。">
   <!-- 資安防護 Content Security Policy (CSP) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://cdn.jsdelivr.net; img-src 'self' data: https:; object-src 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://cdn.jsdelivr.net; img-src 'self' data: https:; frame-src 'self' https:; object-src 'none';">
   
   <!-- Google Fonts & Lucide Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Marked.js for Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260813_03">
+  <link rel="stylesheet" href="styles.css?v=20260813_04">
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
 
@@ -33,7 +33,7 @@
       <nav class="nav-menu" id="navMenu">
         <a href="#home" class="nav-item active" data-route="home"><i data-lucide="home"></i> 首頁</a>
         
-        <!-- 動態分類選單 (僅顯示公開 Public 網頁) -->
+        <!-- 動態分類選單 (僅顯示公開 Public / 導師專區網頁) -->
         <div class="nav-dropdown" id="dropdownResource">
           <button class="dropdown-btn"><i data-lucide="book-open"></i> 資源班專區 <i data-lucide="chevron-down" class="arrow"></i></button>
           <div class="dropdown-content" id="dropdownMenuResource"></div>
@@ -80,7 +80,7 @@
             <span class="hero-badge badge-security"><i data-lucide="shield-check"></i> 純前端資安加密防護</span>
           </div>
           <h1>吉安國小特教行政服務網</h1>
-          <p>整合 4 大官方核心特教連結、提供普通班導師專區、校內特教業務密碼防護與自訂特教網頁發布。</p>
+          <p>整合 4 大官方核心特教連結、提供普通班導師專區、校內特教業務密碼防護與自訂動態特教網頁。</p>
           <div class="hero-search">
             <i data-lucide="search" class="search-icon"></i>
             <input type="text" id="homeSearchInput" placeholder="搜尋核心特教連結、導師指引、轉介表單或規章..." autocomplete="off">
@@ -106,7 +106,7 @@
         </div>
       </div>
 
-      <!-- 2. 🍎 導師專區 (Homeroom Teacher Section - 已移除非動態硬編碼卡片，完全由控制台動態渲染) -->
+      <!-- 2. 🍎 導師專區 (Homeroom Teacher Section) -->
       <div class="container section-padding bg-alt">
         <div class="section-header space-between">
           <div>
@@ -119,7 +119,7 @@
         <div class="pages-grid" id="homeTeacherPagesGrid"></div>
       </div>
 
-      <!-- 3. 公開特教專區網頁 (已刪除圖 4 之「⊕ 新增網頁」按鈕) -->
+      <!-- 3. 公開特教專區網頁 -->
       <div class="container section-padding">
         <div class="section-header">
           <h2><i data-lucide="file-text" class="text-success"></i> 公開特教專區網頁</h2>
@@ -131,7 +131,7 @@
       </div>
     </section>
 
-    <!-- 2. 🔒 校內特教業務版面視圖 (Internal Section View - 已刪除圖 1 靜態表格區塊) -->
+    <!-- 2. 🔒 校內特教業務版面視圖 (Internal Section View) -->
     <section id="viewInternal" class="view-section" data-openspec-view="internal-section">
       <div class="container section-padding">
         <div class="page-header">
@@ -155,7 +155,7 @@
           </form>
         </div>
 
-        <!-- 解鎖後顯示之校內特教內容 (已解鎖時顯示 - 純動態網頁) -->
+        <!-- 解鎖後顯示之校內特教內容 (已解鎖時顯示) -->
         <div class="internal-unlocked-content hidden" id="internalUnlockedContent">
           <div class="unlocked-status-bar">
             <span><i data-lucide="check-circle" class="text-success"></i> 已通過安全身分驗證（授權存取中）</span>
@@ -278,15 +278,21 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="formPageTitle">網頁標題 *</label>
-                  <input type="text" id="formPageTitle" required placeholder="例如：115學年度身心障礙學生轉介前介入評估表">
+                  <input type="text" id="formPageTitle" required placeholder="例如：花蓮縣特教專團線上申請系統">
                 </div>
                 <div class="form-group">
                   <label for="formPageSlug">網頁網址 Slug *</label>
-                  <input type="text" id="formPageSlug" required placeholder="例如：referral-form-115">
+                  <input type="text" id="formPageSlug" required placeholder="例如：special-ed-system">
                 </div>
               </div>
+
+              <!-- 新增選填外跳網址欄位 -->
+              <div class="form-group">
+                <label for="formPageExternalUrl"><i data-lucide="external-link" style="width:14px;"></i> 外部跳轉網址 (選填，若填寫則點擊選單將直接跳轉開啟該網站)</label>
+                <input type="url" id="formPageExternalUrl" placeholder="https://example.com (留空則正常在站內渲染頁面)">
+              </div>
+
               <div class="form-row">
-                <!-- 圖 3 需求：新增「🍎 導師專區」版面選項 -->
                 <div class="form-group">
                   <label for="formPageTargetSection">發布位置 / 版面 *</label>
                   <select id="formPageTargetSection" required>
@@ -312,8 +318,10 @@
                   <span>公開發布於網站（取消發布後將成為草稿隱藏）</span>
                 </label>
               </div>
+
+              <!-- 網頁內容編輯器 (含 內嵌網頁 iframe 快捷按鈕與提示) -->
               <div class="form-group">
-                <label for="formPageContent">網頁內容 (支援標準 Markdown 語法) *</label>
+                <label for="formPageContent">網頁內容 (支援標準 Markdown 語法與 iframe 畫面內嵌) *</label>
                 <div class="md-editor-toolbar">
                   <button type="button" class="md-btn" data-md="## ">H2 標題</button>
                   <button type="button" class="md-btn" data-md="### ">H3 標題</button>
@@ -322,8 +330,19 @@
                   <button type="button" class="md-btn" data-md="1. ">有序列表</button>
                   <button type="button" class="md-btn" data-md="[連結標題](https://)">超連結</button>
                   <button type="button" class="md-btn" data-md="> 提示文字">引用區塊</button>
+                  <button type="button" class="md-btn md-btn-highlight" id="btnAddIframeCode"><i data-lucide="layout"></i> 內嵌網頁畫面 (iframe)</button>
                 </div>
-                <textarea id="formPageContent" rows="10" required placeholder="請在此輸入網頁詳細內容（支援 Markdown 標題、表格、連結、清單...）"></textarea>
+                <div class="form-tip-box">
+                  <i data-lucide="info" style="width:16px; flex-shrink:0;"></i>
+                  <div>
+                    <strong>💡 如何讓點選連結後在網頁直接呈現「連結的網頁畫面」？</strong>
+                    <ol style="margin-left: 1.25rem; margin-top: 0.25rem;">
+                      <li><strong>方法 A (在網頁內部內嵌畫面)</strong>：點擊上方 <code>[ 內嵌網頁畫面 (iframe) ]</code> 按鈕，輸入您要顯示的網站網址，即可在內文中直接顯示該網站實時視窗。</li>
+                      <li><strong>方法 B (點選選單直接跳轉開啟外站)</strong>：直接在上方【外部跳轉網址】填入連結，發布後點選選單項目將自動跳轉開啟目標網站。</li>
+                    </ol>
+                  </div>
+                </div>
+                <textarea id="formPageContent" rows="10" required placeholder="請在此輸入網頁詳細內容（支援 Markdown 標題、表格、連結、iframe 視窗內嵌...）"></textarea>
               </div>
               <div class="form-actions">
                 <button type="submit" class="btn btn-primary"><i data-lucide="check"></i> 儲存網頁</button>
@@ -448,6 +467,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260813_03"></script>
+  <script src="app.js?v=20260813_04"></script>
 </body>
 </html>

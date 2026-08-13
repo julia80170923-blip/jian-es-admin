@@ -12,12 +12,13 @@
 |                                                                       |
 |  +-----------------------------------------------------------------+  |
 |  |       🔒 校內特教業務防護專區 (Password Verified: 8523984)      |  |
-|  |   - 內部特教動態網頁     - 校內表單與個案列管                      |  |
+|  |   - 內嵌外部網站 (iframe)   - 外部連結跳轉 (External Redirect)  |  |
 |  +-----------------------------------------------------------------+  |
 |                                                                       |
 |  +-----------------------------------------------------------------+  |
 |  |      🔒 密碼驗證管理控制台 (Admin Modal - Password: 8523984)    |  |
-|  |   - 發布位置/版面選項: public (公開) | teacher (導師) | internal (校內) |
+|  |   - Markdown 工具列: 新增 [ 內嵌網頁 iframe ] 快捷語法按鈕         |  |
+|  |   - 表單新增選填欄位: externalUrl (外跳網址)                        |  |
 |  +-----------------------------------------------------------------+  |
 +-----------------------------------------------------------------------+
 ```
@@ -28,22 +29,14 @@
 ```json
 {
   "id": "page-sp-101",
-  "title": "115學年度身心障礙學生轉介前介入評估流程",
-  "slug": "referral-process",
-  "category": "轉介與輔導",
-  "targetSection": "teacher", 
-  "content": "## 轉介前介入指引\n...",
+  "title": "花蓮縣特教專團線上申請系統 (內嵌畫面)",
+  "slug": "special-ed-system-embed",
+  "category": "特教業務專區",
+  "targetSection": "public",
+  "externalUrl": "https://special.hlc.edu.tw", 
+  "content": "## 系統簡介\n以下為即時內嵌畫面：\n<iframe src=\"https://special.hlc.edu.tw\" width=\"100%\" height=\"650px\"></iframe>",
   "isPublished": true,
   "updatedAt": "2026-08-13"
 }
 ```
-*`targetSection` 支援三種值：`"public"` (公開特教專區) | `"teacher"` (導師專區) | `"internal"` (校內特教業務版面)*。
-
-## 前端 UI 元件結構 (Component Tree)
-- `HomeView` (`#home`)：
-  - Hero Banner
-  - 特教核心門戶連結區 (4 大核心門戶)
-  - 🍎 **動態「導師專區」** (`#homeTeacherPagesGrid`)：呈現 `targetSection === 'teacher'` 之動態文章。
-  - 🌐 **動態「公開特教專區網頁」** (`#homePagesGrid`)：呈現 `targetSection === 'public'` 之動態文章。（*前台「新增網頁」按鈕已移除*）
-- `InternalView` (`#internal`)：呈現 `targetSection === 'internal'` 之動態文章。（*靜態預載卡片已移除*）
-- `AdminModal`：表單【發布位置 / 版面】包含 `public`, `teacher`, `internal` 三大選項。
+*`externalUrl` 為選填網址，若設定則在選單點擊時可自動跳轉外站；內容中支援使用 `<iframe src="...">` 直接嵌入畫面。*

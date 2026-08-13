@@ -737,7 +737,7 @@ body {
   font-family: inherit;
 }
 
-/* Markdown 渲染內容視圖 */
+/* Markdown 渲染內容視圖與 <iframe> 內嵌視窗 */
 .page-header {
   margin-bottom: 1.75rem;
 }
@@ -785,6 +785,15 @@ body {
   font-size: 1rem;
   line-height: 1.8;
   color: var(--text-primary);
+}
+
+.markdown-body iframe {
+  width: 100%;
+  min-height: 650px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin: 1rem 0;
 }
 
 .markdown-body h1, .markdown-body h2, .markdown-body h3 {
@@ -972,7 +981,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* 表單樣式 (Forms) */
+/* 表單與提示區塊 */
 .form-container {
   margin-top: 1.5rem;
   padding: 1.5rem;
@@ -1055,8 +1064,35 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 .md-btn:hover { background: var(--bg-alt); }
+
+.md-btn-highlight {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: #bee3f8;
+  font-weight: 600;
+}
+.md-btn-highlight:hover {
+  background: #bee3f8;
+}
+
+.form-tip-box {
+  background: #ebf8ff;
+  border: 1px solid #bee3f8;
+  color: #2b6cb0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
 
 .form-actions {
   display: flex;
@@ -1151,4 +1187,5 @@ body {
   .hero-stats { flex-direction: column; gap: 1rem; }
   .form-row { grid-template-columns: 1fr; }
   .modal-card { max-height: 95vh; }
+  .markdown-body iframe { min-height: 450px; }
 }

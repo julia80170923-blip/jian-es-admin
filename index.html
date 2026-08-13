@@ -15,7 +15,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Marked.js for Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260813_06">
+  <link rel="stylesheet" href="styles.css?v=20260813_07">
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
 
@@ -25,7 +25,7 @@
     <button class="btn btn-sm btn-accent" id="btnUndoDelete"><i data-lucide="rotate-ccw"></i> ↶ 立即復原 (Undo)</button>
   </div>
 
-  <!-- 頂部導覽列 -->
+  <!-- 頂部導覽列 (極簡導覽列：僅保留首頁與校內特教業務) -->
   <header class="navbar" data-openspec-component="navbar">
     <div class="nav-container">
       <a href="#home" class="brand">
@@ -39,22 +39,6 @@
       <nav class="nav-menu" id="navMenu">
         <a href="#home" class="nav-item active" data-route="home"><i data-lucide="home"></i> 首頁</a>
         
-        <!-- 動態分類選單 -->
-        <div class="nav-dropdown" id="dropdownResource">
-          <button class="dropdown-btn"><i data-lucide="book-open"></i> 資源班專區 <i data-lucide="chevron-down" class="arrow"></i></button>
-          <div class="dropdown-content" id="dropdownMenuResource"></div>
-        </div>
-
-        <div class="nav-dropdown" id="dropdownIEP">
-          <button class="dropdown-btn"><i data-lucide="clipboard-list"></i> IEP個案管理 <i data-lucide="chevron-down" class="arrow"></i></button>
-          <div class="dropdown-content" id="dropdownMenuIEP"></div>
-        </div>
-
-        <div class="nav-dropdown" id="dropdownGeneral">
-          <button class="dropdown-btn"><i data-lucide="folder-kanban"></i> 公開特教專區 <i data-lucide="chevron-down" class="arrow"></i></button>
-          <div class="dropdown-content" id="dropdownMenuGeneral"></div>
-        </div>
-
         <!-- 校內特教業務 (🔒 密碼防護專區) -->
         <a href="#internal" class="nav-item nav-internal-item" data-route="internal">
           <i data-lucide="lock" class="text-warning"></i> 校內特教業務
@@ -468,6 +452,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260813_06"></script>
+  <script src="app.js?v=20260813_07"></script>
 </body>
 </html>

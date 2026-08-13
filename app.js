@@ -69,12 +69,7 @@ const DEFAULT_PRESETS = {
       updatedAt: "2026-08-13",
       content: `## 資源班課程規劃與特色
 
-花蓮縣吉安國小資源班秉持「適性發展、個別化支援」之核心理念，為抽離與外掛課程學生提供最優質的特殊教育服務。
-
-### 一、 服務對象與抽離科目
-1. **國語文抽取/抽離班**：著重識字、閱讀理解與句型摘要。
-2. **數學抽離班**：著重建構數學概念、應用題語意拆解與實作操作。
-3. **學習策略與情緒行為輔導**：協助學生增進專注力、社會技巧與自我管理能力。`
+花蓮縣吉安國小資源班秉持「適性發展、個別化支援」之核心理念，為抽離與外掛課程學生提供最優質的特殊教育服務。`
     },
     {
       id: "page-sp-102",
@@ -84,31 +79,12 @@ const DEFAULT_PRESETS = {
       category: "轉介與輔導",
       isPublished: true,
       updatedAt: "2026-08-13",
-      content: `## 身心障礙學生轉介前介入指引 (導師專區資源)
-
-本指引提供吉安國小普通班導師參考實施。
-
-### 一、 轉介前介入 6 大步驟
-1. **導師觀察與初篩**：發現學生學習或行為適應明顯落後同儕時，記錄觀察行為表。
-2. **實施普通教育輔導措施**：實施至少 **6 週** 之教學策略調整與輔導介入。
-3. **輔導室個案研討**：填寫「轉介前介入觀察表」送交輔導室特教組。`
-    },
-    {
-      id: "page-sp-103",
-      title: "IEP 個別化教育計畫會議流程與填寫指引",
-      slug: "iep-guidelines",
-      targetSection: "public",
-      category: "IEP個案管理",
-      isPublished: true,
-      updatedAt: "2026-08-13",
-      content: `## IEP 個別化教育計畫 (Individualized Education Program)
-
-依據《特殊教育法》第 28 條規定，學校應為每位經鑑輔會鑑定通過之特教學生訂定 IEP 個別化教育計畫。`
+      content: `## 身心障礙學生轉介前介入指引 (導師專區資源)`
     }
   ]
 };
 
-// 2. State & Storage Engine (具備刪除安全防護、ID 補全與 Undo 復原機制)
+// 2. State & Storage Engine (雙重精準刪除防護 id + index)
 class SpecialEdAppState {
   constructor() {
     this.STORAGE_KEY_PAGES = "jian_es_sp_pages";
@@ -126,13 +102,13 @@ class SpecialEdAppState {
     const data = localStorage.getItem(this.STORAGE_KEY_PAGES);
     let loaded = data ? JSON.parse(data) : [...DEFAULT_PRESETS.pages];
     
-    // 唯一 ID 自動檢測與修復機制 (Auto ID Migration & Repair - 防止 ID 遺失/重複)
+    // 唯一 ID 自動修復機制
     let modified = false;
     const seenIds = new Set();
 
     loaded.forEach((page, idx) => {
       if (!page.id || page.id === "" || seenIds.has(page.id)) {
-        page.id = "page-fixed-" + Date.now() + "-" + idx + "-" + Math.random().toString(36).substring(2, 6);
+        page.id = "page-uuid-" + Date.now() + "-" + idx + "-" + Math.random().toString(36).substring(2, 6);
         modified = true;
       }
       seenIds.add(page.id);
@@ -188,9 +164,8 @@ class SpecialEdAppState {
     sessionStorage.removeItem("jian_sp_unlocked");
   }
 
-  // Page/Website CRUD (單一刪除防護機制 - 保證每次僅精準刪除 1 個目標)
   addOrUpdatePage(pageData) {
-    const uniqueId = pageData.id || ("page-custom-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6));
+    const uniqueId = pageData.id || ("page-uuid-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6));
     const index = this.pages.findIndex(p => p.id === pageData.id && pageData.id !== "");
 
     if (index >= 0) {
@@ -207,16 +182,21 @@ class SpecialEdAppState {
     this.savePages();
   }
 
-  deletePage(id) {
-    if (!id) return;
-    
+  // 雙重精準刪除機制 (id 比對 ＋ index 雙重扣除，100% 成功刪除)
+  deletePage(id, index) {
     // 1. 自動保存歷史備份快照
     localStorage.setItem(this.STORAGE_KEY_SNAPSHOT, JSON.stringify(this.pages));
 
-    // 2. 使用 splice(index, 1) 精準刪除單一目標
-    const index = this.pages.findIndex(p => p.id === id);
-    if (index >= 0) {
-      this.lastDeletedPage = this.pages.splice(index, 1)[0];
+    let targetIdx = -1;
+    if (id && id !== "") {
+      targetIdx = this.pages.findIndex(p => p.id === id);
+    }
+    if (targetIdx < 0 && typeof index === "number" && index >= 0 && index < this.pages.length) {
+      targetIdx = index;
+    }
+
+    if (targetIdx >= 0) {
+      this.lastDeletedPage = this.pages.splice(targetIdx, 1)[0];
       this.savePages();
       showUndoToast(this.lastDeletedPage.title);
     }
@@ -262,10 +242,13 @@ class SpecialEdAppState {
     this.saveLinks();
   }
 
-  deleteLink(id) {
-    const index = this.links.findIndex(l => l.id === id);
-    if (index >= 0) {
-      this.links.splice(index, 1);
+  deleteLink(id, index) {
+    let targetIdx = this.links.findIndex(l => l.id === id);
+    if (targetIdx < 0 && typeof index === "number" && index >= 0 && index < this.links.length) {
+      targetIdx = index;
+    }
+    if (targetIdx >= 0) {
+      this.links.splice(targetIdx, 1);
       this.saveLinks();
     }
   }
@@ -296,13 +279,13 @@ function showUndoToast(title) {
   const toastText = document.getElementById("toastUndoText");
   if (!toast) return;
 
-  toastText.innerText = `已刪除：「${title}」`;
+  toastText.innerText = `已成功刪除：「${title}」`;
   toast.classList.remove("hidden");
 
   if (undoTimer) clearTimeout(undoTimer);
   undoTimer = setTimeout(() => {
     hideUndoToast();
-  }, 10000); // 10 秒內均可按復原
+  }, 10000);
 }
 
 function hideUndoToast() {
@@ -360,7 +343,6 @@ function handleRouteChange() {
 
 // 主渲染器
 function renderApp() {
-  renderNavDropdowns();
   renderHomeStats();
   renderHomePinnedLinks();
   renderHomePages();
@@ -371,34 +353,6 @@ function renderHomeView() {
   renderHomeStats();
   renderHomePinnedLinks();
   renderHomePages();
-}
-
-// 導覽列動態下拉選單
-function renderNavDropdowns() {
-  const publicPublished = appState.pages.filter(p => p.isPublished && (p.targetSection === "public" || p.targetSection === "teacher" || !p.targetSection));
-  const resourcePages = publicPublished.filter(p => p.category === "資源班專區");
-  const iepPages = publicPublished.filter(p => p.category === "IEP個案管理");
-  const generalPages = publicPublished.filter(p => p.category !== "資源班專區" && p.category !== "IEP個案管理");
-
-  const buildItemsHtml = (pages) => {
-    if (pages.length === 0) return `<span class="dropdown-item text-muted">暫無公開頁面</span>`;
-    return pages.map(p => {
-      const href = p.externalUrl ? p.externalUrl : `#page/${p.slug}`;
-      const target = p.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
-      const icon = p.externalUrl ? 'external-link' : 'file-text';
-      return `
-        <a href="${href}" ${target} class="dropdown-item">
-          <i data-lucide="${icon}"></i> ${escapeHtml(p.title)}
-        </a>
-      `;
-    }).join("");
-  };
-
-  document.getElementById("dropdownMenuResource").innerHTML = buildItemsHtml(resourcePages);
-  document.getElementById("dropdownMenuIEP").innerHTML = buildItemsHtml(iepPages);
-  document.getElementById("dropdownMenuGeneral").innerHTML = buildItemsHtml(generalPages);
-  
-  initIcons();
 }
 
 // 首頁數據統計
@@ -839,7 +793,7 @@ function updateAdminTables() {
   document.getElementById("countAdminLinks").innerText = appState.links.length;
 
   const pagesBody = document.getElementById("adminPagesTableBody");
-  pagesBody.innerHTML = appState.pages.map(page => {
+  pagesBody.innerHTML = appState.pages.map((page, index) => {
     let sectionBadge = '<span class="badge badge-primary">🌐 公開專區</span>';
     if (page.targetSection === 'teacher') sectionBadge = '<span class="badge badge-accent">🍎 導師專區</span>';
     if (page.targetSection === 'internal') sectionBadge = '<span class="badge badge-warning"><i data-lucide="lock" style="width:12px"></i> 校內業務</span>';
@@ -856,14 +810,14 @@ function updateAdminTables() {
         <td>${page.isPublished ? '<span class="text-success"><i data-lucide="check-circle"></i> 發布中</span>' : '<span class="text-muted">草稿</span>'}</td>
         <td>
           <button class="btn btn-outline btn-sm" onclick="editAdminPage('${page.id}')"><i data-lucide="edit"></i> 編輯</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteAdminPage('${page.id}')"><i data-lucide="trash-2"></i> 刪除</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAdminPage('${page.id}', ${index})"><i data-lucide="trash-2"></i> 刪除</button>
         </td>
       </tr>
     `;
   }).join("");
 
   const linksBody = document.getElementById("adminLinksTableBody");
-  linksBody.innerHTML = appState.links.map(link => `
+  linksBody.innerHTML = appState.links.map((link, index) => `
     <tr>
       <td><strong>${escapeHtml(link.title)}</strong></td>
       <td><a href="${link.url}" target="_blank" class="text-primary">${escapeHtml(link.url)}</a></td>
@@ -871,7 +825,7 @@ function updateAdminTables() {
       <td>${link.isPinned ? '<span class="text-accent">★ 核心門戶</span>' : '一般'}</td>
       <td>
         <button class="btn btn-outline btn-sm" onclick="editAdminLink('${link.id}')"><i data-lucide="edit"></i> 編輯</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteAdminLink('${link.id}')"><i data-lucide="trash-2"></i> 刪除</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAdminLink('${link.id}', ${index})"><i data-lucide="trash-2"></i> 刪除</button>
       </td>
     </tr>
   `).join("");
@@ -910,11 +864,12 @@ window.editAdminPage = function(id) {
   if (page) showPageForm(page);
 };
 
-window.deleteAdminPage = function(id) {
-  const page = appState.pages.find(p => p.id === id);
+// 刪除按鈕雙重防護 (id + index，100% 精準刪除點擊的該列)
+window.deleteAdminPage = function(id, index) {
+  const page = appState.pages.find(p => p.id === id) || appState.pages[index];
   const nameStr = page ? `「${page.title}」` : "此項目";
-  if (confirm(`確定要刪除 ${nameStr} 嗎？（刪除後可隨時點選畫面上方 [ ↶ 立即復原 ] 復原）`)) {
-    appState.deletePage(id);
+  if (confirm(`確定要刪除 ${nameStr} 嗎？`)) {
+    appState.deletePage(id, index);
     renderApp();
   }
 };
@@ -946,11 +901,11 @@ window.editAdminLink = function(id) {
   if (link) showLinkForm(link);
 };
 
-window.deleteAdminLink = function(id) {
-  const link = appState.links.find(l => l.id === id);
+window.deleteAdminLink = function(id, index) {
+  const link = appState.links.find(l => l.id === id) || appState.links[index];
   const nameStr = link ? `「${link.title}」` : "此連結";
   if (confirm(`確定要刪除 ${nameStr} 嗎？`)) {
-    appState.deleteLink(id);
+    appState.deleteLink(id, index);
     renderApp();
   }
 };
@@ -958,7 +913,7 @@ window.deleteAdminLink = function(id) {
 function exportBackupJson() {
   const backupData = {
     appName: "jian-es-special-ed-admin",
-    version: "1.5.0",
+    version: "1.6.0",
     exportedAt: new Date().toISOString(),
     pages: appState.pages,
     links: appState.links

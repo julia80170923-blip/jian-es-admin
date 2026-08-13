@@ -16,26 +16,17 @@
 |                                                                       |
 |  +-----------------------------------------------------------------+  |
 |  |      🔒 密碼驗證管理控制台 (Admin Modal - Password: 8523984)    |  |
-|  |   - ID 自動補全與修復 (Auto-ID Repair)                          |  |
-|  |   - 精準單一刪除防護 (splice(index, 1) 精準扣除單一目標)         |  |
-|  |   - ↶ 一鍵復原 Undo Toast 浮動按鈕                               |  |
-|  |   - 歷史快照鏡像備份 (Auto Snapshot & Restore)                    |  |
+|  |   - deleteAdminPage(id, index) 雙重精準刪除機制                   |  |
 |  +-----------------------------------------------------------------+  |
 +-----------------------------------------------------------------------+
 ```
 
-## 資料模型規格 (Data Models Schema)
-
-### 刪除與快照防護模型 (Snapshot & Undo Schema)
-```json
-{
-  "lastDeletedPage": {
-    "id": "page-custom-1786584900000",
-    "title": "特生考試服務服務雲",
-    "targetSection": "internal",
-    "externalUrl": "https://regal-tiramisu-ecaf8b.netlify.app/",
-    "deletedAt": "2026-08-13T20:53:30Z"
-  },
-  "autoSnapshotPages": [ ... ]
-}
-```
+## 前端 UI 元件結構 (Component Tree - 極簡導覽列)
+- `Navbar` (`.navbar`)：
+  - Brand Logo & Title (`花蓮縣吉安國小 特教行政資訊網`)
+  - Nav Menu Items:
+    - 🏠 **首頁** (`#home`)
+    - 🔒 **校內特教業務** (`#internal`)
+  - Nav Actions:
+    - ⚙️ **管理控制台** (`#openAdminBtn`)
+  - *(已移除：資源班專區、IEP個案管理、公開特教專區)*

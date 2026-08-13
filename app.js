@@ -108,12 +108,14 @@ const DEFAULT_PRESETS = {
   ]
 };
 
-// 2. State & Storage Engine
+// 2. State & Storage Engine (具備刪除安全防護、ID 補全與 Undo 復原機制)
 class SpecialEdAppState {
   constructor() {
     this.STORAGE_KEY_PAGES = "jian_es_sp_pages";
     this.STORAGE_KEY_LINKS = "jian_es_sp_links";
-    
+    this.STORAGE_KEY_SNAPSHOT = "jian_es_sp_snapshot";
+
+    this.lastDeletedPage = null;
     this.pages = this.loadPages();
     this.links = this.loadLinks();
     this.isUnlocked = sessionStorage.getItem("jian_sp_unlocked") === "true";
@@ -122,14 +124,24 @@ class SpecialEdAppState {
 
   loadPages() {
     const data = localStorage.getItem(this.STORAGE_KEY_PAGES);
-    if (!data) return [...DEFAULT_PRESETS.pages];
+    let loaded = data ? JSON.parse(data) : [...DEFAULT_PRESETS.pages];
     
-    let loaded = JSON.parse(data);
-    // 確保預載之「特生考試服務服務雲」若不存在則自動補全
-    const hasExamCloud = loaded.some(p => p.title === "特生考試服務服務雲" || p.externalUrl === "https://regal-tiramisu-ecaf8b.netlify.app/");
-    if (!hasExamCloud) {
-      loaded.unshift(DEFAULT_PRESETS.pages[0]);
+    // 唯一 ID 自動檢測與修復機制 (Auto ID Migration & Repair - 防止 ID 遺失/重複)
+    let modified = false;
+    const seenIds = new Set();
+
+    loaded.forEach((page, idx) => {
+      if (!page.id || page.id === "" || seenIds.has(page.id)) {
+        page.id = "page-fixed-" + Date.now() + "-" + idx + "-" + Math.random().toString(36).substring(2, 6);
+        modified = true;
+      }
+      seenIds.add(page.id);
+    });
+
+    if (modified || !data) {
+      localStorage.setItem(this.STORAGE_KEY_PAGES, JSON.stringify(loaded));
     }
+
     return loaded;
   }
 
@@ -176,7 +188,7 @@ class SpecialEdAppState {
     sessionStorage.removeItem("jian_sp_unlocked");
   }
 
-  // Page/Website CRUD (確保可獨立新增多個網站，完全不影響舊網頁設定)
+  // Page/Website CRUD (單一刪除防護機制 - 保證每次僅精準刪除 1 個目標)
   addOrUpdatePage(pageData) {
     const uniqueId = pageData.id || ("page-custom-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6));
     const index = this.pages.findIndex(p => p.id === pageData.id && pageData.id !== "");
@@ -196,8 +208,42 @@ class SpecialEdAppState {
   }
 
   deletePage(id) {
-    this.pages = this.pages.filter(p => p.id !== id);
-    this.savePages();
+    if (!id) return;
+    
+    // 1. 自動保存歷史備份快照
+    localStorage.setItem(this.STORAGE_KEY_SNAPSHOT, JSON.stringify(this.pages));
+
+    // 2. 使用 splice(index, 1) 精準刪除單一目標
+    const index = this.pages.findIndex(p => p.id === id);
+    if (index >= 0) {
+      this.lastDeletedPage = this.pages.splice(index, 1)[0];
+      this.savePages();
+      showUndoToast(this.lastDeletedPage.title);
+    }
+  }
+
+  undoDeletePage() {
+    if (this.lastDeletedPage) {
+      this.pages.unshift(this.lastDeletedPage);
+      this.savePages();
+      const restoredTitle = this.lastDeletedPage.title;
+      this.lastDeletedPage = null;
+      hideUndoToast();
+      renderApp();
+      alert(`已成功復原刪除的「${restoredTitle}」！`);
+    }
+  }
+
+  restoreSnapshot() {
+    const snapshot = localStorage.getItem(this.STORAGE_KEY_SNAPSHOT);
+    if (snapshot) {
+      this.pages = JSON.parse(snapshot);
+      this.savePages();
+      renderApp();
+      alert("已成功從歷史安全快照復原資料！");
+    } else {
+      alert("未找到近期的歷史安全快照。");
+    }
   }
 
   // Link CRUD
@@ -217,8 +263,11 @@ class SpecialEdAppState {
   }
 
   deleteLink(id) {
-    this.links = this.links.filter(l => l.id !== id);
-    this.saveLinks();
+    const index = this.links.findIndex(l => l.id === id);
+    if (index >= 0) {
+      this.links.splice(index, 1);
+      this.saveLinks();
+    }
   }
 }
 
@@ -232,11 +281,41 @@ document.addEventListener("DOMContentLoaded", () => {
   renderApp();
   initAdminModal();
   initInternalPasswordModule();
+  initUndoToast();
 });
 
 function initIcons() {
   if (window.lucide) {
     lucide.createIcons();
+  }
+}
+
+let undoTimer = null;
+function showUndoToast(title) {
+  const toast = document.getElementById("toastUndo");
+  const toastText = document.getElementById("toastUndoText");
+  if (!toast) return;
+
+  toastText.innerText = `已刪除：「${title}」`;
+  toast.classList.remove("hidden");
+
+  if (undoTimer) clearTimeout(undoTimer);
+  undoTimer = setTimeout(() => {
+    hideUndoToast();
+  }, 10000); // 10 秒內均可按復原
+}
+
+function hideUndoToast() {
+  const toast = document.getElementById("toastUndo");
+  if (toast) toast.classList.add("hidden");
+}
+
+function initUndoToast() {
+  const btnUndo = document.getElementById("btnUndoDelete");
+  if (btnUndo) {
+    btnUndo.onclick = () => {
+      appState.undoDeletePage();
+    };
   }
 }
 
@@ -339,7 +418,6 @@ function renderHomePinnedLinks() {
 
 // 首頁動態網頁與網站名稱跳轉按鈕渲染
 function renderHomePages() {
-  // 1. 動態渲染「導師專區」
   const teacherPages = appState.pages.filter(p => p.isPublished && p.targetSection === "teacher");
   const teacherGrid = document.getElementById("homeTeacherPagesGrid");
 
@@ -349,7 +427,6 @@ function renderHomePages() {
     teacherGrid.innerHTML = teacherPages.map(page => buildPageCardHtml(page, true)).join("");
   }
 
-  // 2. 動態渲染「公開特教專區網頁」
   const publicPages = appState.pages.filter(p => p.isPublished && (p.targetSection === "public" || !p.targetSection));
   const publicGrid = document.getElementById("homePagesGrid");
 
@@ -362,14 +439,12 @@ function renderHomePages() {
   initIcons();
 }
 
-// 卡片元件生成器 (呈現網站名稱按鈕，點選自動跳轉)
 function buildPageCardHtml(page, isTeacher = false) {
   const badgeClass = isTeacher ? 'badge-accent' : 'badge-primary';
   const badgeText = isTeacher ? '🍎 導師專區' : escapeHtml(page.category);
   const borderClass = isTeacher ? 'border-warning' : '';
 
   if (page.externalUrl) {
-    // 外部網站模式：顯示醒目的網站名稱按鈕，點擊自動跳轉
     return `
       <div class="page-card shadow-sm ${borderClass}">
         <div class="page-card-header">
@@ -390,7 +465,6 @@ function buildPageCardHtml(page, isTeacher = false) {
     `;
   }
 
-  // 一般站內文章模式
   return `
     <div class="page-card shadow-sm ${borderClass}">
       <div class="page-card-header">
@@ -466,7 +540,7 @@ function renderInternalView() {
 
     const internalPages = appState.pages.filter(p => p.targetSection === "internal");
     if (internalPages.length === 0) {
-      pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁/網站。可在管理控制台新增網頁並選擇「校內特教業務版面」。</p>`;
+      pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁/網站。</p>`;
     } else {
       pagesGrid.innerHTML = internalPages.map(page => buildPageCardHtml(page, false)).join("");
     }
@@ -650,7 +724,6 @@ function initAdminModal() {
   document.getElementById("btnCreateNewLink").onclick = () => showLinkForm();
   document.getElementById("btnCancelLinkForm").onclick = () => hideLinkForm();
 
-  // 綁定 Markdown 工具列按鈕
   document.querySelectorAll(".md-btn").forEach(btn => {
     btn.onclick = () => {
       const textarea = document.getElementById("formPageContent");
@@ -678,7 +751,6 @@ function initAdminModal() {
     };
   });
 
-  // 網頁與網站儲存表單 (智慧 URL 解析容錯)
   document.getElementById("pageForm").onsubmit = (e) => {
     e.preventDefault();
     const targetSec = document.getElementById("formPageTargetSection").value;
@@ -686,12 +758,10 @@ function initAdminModal() {
     let extUrl = document.getElementById("formPageExternalUrl").value.trim();
     const pageTitle = document.getElementById("formPageTitle").value.trim();
 
-    // 智慧 URL 解析：若使用者在 Slug 欄位直接貼上以 http:// 或 https:// 開頭的完整網址 (如圖1所示)
     if (rawSlug.startsWith("http://") || rawSlug.startsWith("https://")) {
       if (!extUrl) {
-        extUrl = rawSlug; // 自動轉儲為外部跳轉網址
+        extUrl = rawSlug;
       }
-      // 生成乾淨的站內 Slug 代碼
       rawSlug = "site-" + Date.now().toString().slice(-6);
     } else {
       rawSlug = rawSlug.toLowerCase().replace(/\s+/g, "-");
@@ -717,9 +787,9 @@ function initAdminModal() {
     if (targetSec === "internal") targetName = "🔒 校內特教業務版面";
     
     if (extUrl) {
-      alert(`已成功新增外部網站「${pageTitle}」！已在「${targetName}」版面生成專屬網站名稱跳轉按鈕。`);
+      alert(`已成功儲存外部網站「${pageTitle}」！`);
     } else {
-      alert(`特教網頁「${pageTitle}」已成功儲存於「${targetName}」。`);
+      alert(`特教網頁「${pageTitle}」已成功儲存。`);
     }
   };
 
@@ -743,8 +813,11 @@ function initAdminModal() {
   document.getElementById("btnExportBackup").onclick = exportBackupJson;
   document.getElementById("btnTriggerImport").onclick = () => document.getElementById("importJsonFile").click();
   document.getElementById("importJsonFile").onchange = importBackupJson;
+  document.getElementById("btnRestoreSnapshot").onclick = () => {
+    appState.restoreSnapshot();
+  };
   document.getElementById("btnResetPresets").onclick = () => {
-    if (confirm("確定要還原預載門戶與預設特教網站嗎？（注意：此操作不會清空已備份之檔案）")) {
+    if (confirm("確定要還原預載門戶與預設特教網站嗎？")) {
       appState.resetToPresets();
       renderApp();
       alert("已成功還原預設值！");
@@ -838,7 +911,9 @@ window.editAdminPage = function(id) {
 };
 
 window.deleteAdminPage = function(id) {
-  if (confirm("確定要刪除此特教網頁/網站嗎？")) {
+  const page = appState.pages.find(p => p.id === id);
+  const nameStr = page ? `「${page.title}」` : "此項目";
+  if (confirm(`確定要刪除 ${nameStr} 嗎？（刪除後可隨時點選畫面上方 [ ↶ 立即復原 ] 復原）`)) {
     appState.deletePage(id);
     renderApp();
   }
@@ -872,7 +947,9 @@ window.editAdminLink = function(id) {
 };
 
 window.deleteAdminLink = function(id) {
-  if (confirm("確定要刪除此核心連結嗎？")) {
+  const link = appState.links.find(l => l.id === id);
+  const nameStr = link ? `「${link.title}」` : "此連結";
+  if (confirm(`確定要刪除 ${nameStr} 嗎？`)) {
     appState.deleteLink(id);
     renderApp();
   }
@@ -881,7 +958,7 @@ window.deleteAdminLink = function(id) {
 function exportBackupJson() {
   const backupData = {
     appName: "jian-es-special-ed-admin",
-    version: "1.4.0",
+    version: "1.5.0",
     exportedAt: new Date().toISOString(),
     pages: appState.pages,
     links: appState.links
@@ -908,7 +985,7 @@ function importBackupJson(e) {
         appState.savePages();
         appState.saveLinks();
         renderApp();
-        alert("成功匯入 JSON 備份資料！多個特教網站與核心連結已更新。");
+        alert("成功匯入 JSON 備份資料！所有網頁與核心連結已恢復。");
       } else {
         alert("匯入失敗：JSON 格式無效。");
       }

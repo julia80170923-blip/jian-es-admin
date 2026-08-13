@@ -15,9 +15,15 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Marked.js for Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260813_05">
+  <link rel="stylesheet" href="styles.css?v=20260813_06">
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
+
+  <!-- 全域 Undo 刪除復原浮動提示 (Toast) -->
+  <div class="toast-undo-container hidden" id="toastUndo">
+    <span id="toastUndoText">已刪除項目</span>
+    <button class="btn btn-sm btn-accent" id="btnUndoDelete"><i data-lucide="rotate-ccw"></i> ↶ 立即復原 (Undo)</button>
+  </div>
 
   <!-- 頂部導覽列 -->
   <header class="navbar" data-openspec-component="navbar">
@@ -237,7 +243,7 @@
       <div class="modal-tabs">
         <button class="tab-btn active" data-tab="tabPages"><i data-lucide="file-text"></i> 動態網頁與網站管理 (<span id="countAdminPages">0</span>)</button>
         <button class="tab-btn" data-tab="tabLinks"><i data-lucide="link"></i> 核心連結管理 (<span id="countAdminLinks">0</span>)</button>
-        <button class="tab-btn" data-tab="tabBackup"><i data-lucide="database"></i> 備份與匯入</button>
+        <button class="tab-btn" data-tab="tabBackup"><i data-lucide="database"></i> 備份與還原</button>
       </div>
 
       <div class="modal-body">
@@ -426,6 +432,13 @@
               <button class="btn btn-outline" id="btnTriggerImport"><i data-lucide="upload"></i> 選擇檔案並匯入</button>
             </div>
 
+            <div class="backup-card border-warning">
+              <i data-lucide="history" class="backup-icon text-warning"></i>
+              <h4>歷史自動快照還原</h4>
+              <p>當發生刪除或操作不當時，可點擊此處一鍵恢復刪除前的自動安全快照。</p>
+              <button class="btn btn-outline btn-sm" id="btnRestoreSnapshot"><i data-lucide="rotate-ccw"></i> ↶ 一鍵復原自動歷史快照</button>
+            </div>
+
             <div class="backup-card">
               <i data-lucide="refresh-cw" class="backup-icon text-danger"></i>
               <h4>還原預設資料 (4大核心連結)</h4>
@@ -455,6 +468,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260813_05"></script>
+  <script src="app.js?v=20260813_06"></script>
 </body>
 </html>

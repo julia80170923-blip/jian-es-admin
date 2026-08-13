@@ -1,15 +1,20 @@
-# 動態網頁管理與多網站按鈕跳轉功能規格 (Multi-Site & Auto-Redirect Spec)
+# 動態網頁管理與單一刪除防護功能規格 (Deletion Guard & Undo Spec)
 
 ## Requirement Statements (EARS-style)
 
-- **[REQ-PAGE-01]** The system **SHALL** allow administrators to continuously add multiple custom websites/pages while retaining all existing pages and presets.
-- **[REQ-PAGE-02]** If an administrator inputs a complete web URL (`http://` or `https://`) in the "Slug" field or "外部跳轉網址" field, the system **SHALL** automatically parse it as an external redirect URL and sanitize the Slug automatically.
-- **[REQ-PAGE-03]** For every page configured with an external URL, the system **SHALL** render a prominent button displaying the website title (e.g. `🔗 前往【特生考試服務服務雲】 ↗`).
-- **[REQ-PAGE-04]** Clicking the website title button **SHALL** automatically redirect and open the target website in a new browser tab.
+- **[REQ-PAGE-01]** The system **SHALL** automatically inspect and assign a non-empty, unique ID to every page stored in LocalStorage upon initialization.
+- **[REQ-PAGE-02]** The deletion operation **SHALL** use `splice(index, 1)` targeting the exact matched page ID, ensuring that deleting one page NEVER affects or removes any other pages.
+- **[REQ-PAGE-03]** Upon deleting any page, the system **SHALL** display an "Undo" Toast notification allowing the user to restore the deleted page with a single click.
+- **[REQ-PAGE-04]** The system **SHALL** maintain an automatic historical snapshot in LocalStorage prior to any deletion operation, enabling one-click snapshot restoration in the Admin Control Panel.
 
 ## Scenarios (BDD Given/When/Then)
 
-### Scenario 1: 新增多個網站並測試按鈕自動跳轉
-- **GIVEN** 管理員在控制台新增「特生考試服務服務雲」，網址填寫 `https://regal-tiramisu-ecaf8b.netlify.app/`
-- **WHEN** 管理員儲存後返回前台
-- **THEN** 前台版面上顯示醒目的「🔗 前往 特生考試服務服務雲 ↗」按鈕，點擊該按鈕自動跳轉至 Netlify 服務網站，且原先的特教網頁與門戶均完好保留。
+### Scenario 1: 安全刪除單一特教網站
+- **GIVEN** 管理員在控制台擁有 5 個自訂特教網站
+- **WHEN** 管理員點擊刪除其中 1 個網站
+- **THEN** 系統僅精準移除該 1 個網站，其餘 4 個網站完全保留不被影動，且畫面上方顯示「已刪除──[↶ 立即復原 (Undo)]」浮動通知。
+
+### Scenario 2: 點擊復原按鈕復原刪除網站
+- **GIVEN** 管理員剛刪除了一個網站
+- **WHEN** 管理員點擊浮動通知中的「↶ 立即復原 (Undo)」
+- **THEN** 被刪除的網站立即完好恢復並同步儲存至 LocalStorage。

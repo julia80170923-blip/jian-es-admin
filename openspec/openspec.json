@@ -1,0 +1,18 @@
+{
+  "name": "jian-es-special-ed-admin",
+  "title": "吉安國小特教行政網站 (Ji-an ES Special Education Portal)",
+  "version": "1.0.0",
+  "openspecVersion": "1.0",
+  "description": "基於 OpenSpec (Spec-Driven Development, SDD) 規範建構之吉安國小特教行政資訊門戶，提供動態特教網頁新增、特教外部連結管理與零成本託管。",
+  "specs": [
+    "openspec/proposal.md",
+    "openspec/design.md",
+    "openspec/specs/page-management.md",
+    "openspec/specs/external-links.md"
+  ],
+  "author": "花蓮縣吉安國小特教團隊",
+  "deployment": {
+    "platform": "GitHub Pages / Netlify",
+    "url": "https://julia80170923-blip.github.io/jian-es-admin/"
+  }
+}

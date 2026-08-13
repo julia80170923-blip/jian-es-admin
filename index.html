@@ -15,7 +15,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Marked.js for Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260813_04">
+  <link rel="stylesheet" href="styles.css?v=20260813_05">
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
 
@@ -33,7 +33,7 @@
       <nav class="nav-menu" id="navMenu">
         <a href="#home" class="nav-item active" data-route="home"><i data-lucide="home"></i> 首頁</a>
         
-        <!-- 動態分類選單 (僅顯示公開 Public / 導師專區網頁) -->
+        <!-- 動態分類選單 -->
         <div class="nav-dropdown" id="dropdownResource">
           <button class="dropdown-btn"><i data-lucide="book-open"></i> 資源班專區 <i data-lucide="chevron-down" class="arrow"></i></button>
           <div class="dropdown-content" id="dropdownMenuResource"></div>
@@ -56,7 +56,7 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- 管理控制台按鈕 (需要密碼 8523984) -->
+        <!-- 管理控制台按鈕 (密碼 8523984) -->
         <button class="btn btn-outline btn-sm" id="openAdminBtn">
           <i data-lucide="settings"></i> 管理控制台
         </button>
@@ -83,7 +83,7 @@
           <p>整合 4 大官方核心特教連結、提供普通班導師專區、校內特教業務密碼防護與自訂動態特教網頁。</p>
           <div class="hero-search">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="text" id="homeSearchInput" placeholder="搜尋核心特教連結、導師指引、轉介表單或規章..." autocomplete="off">
+            <input type="text" id="homeSearchInput" placeholder="搜尋核心特教連結、導師指引、特生考試服務雲..." autocomplete="off">
             <button class="btn btn-primary" id="homeSearchBtn">搜尋</button>
           </div>
           <div class="hero-stats">
@@ -95,14 +95,14 @@
         </div>
       </div>
 
-      <!-- 1. 核心特教網站連結庫版面 (直接呈現於首頁) -->
+      <!-- 1. 核心特教網站連結庫版面 -->
       <div class="container section-padding">
         <div class="section-header">
           <h2><i data-lucide="bookmark" class="text-primary"></i> 4 大核心特教官方網站連結</h2>
           <p>教育部與花蓮縣政府官方特教門戶平台，提供快速安全跳轉</p>
         </div>
         <div class="links-grid" id="homePinnedLinksGrid">
-          <!-- JS 動態渲染 4 大核心連結 -->
+          <!-- JS 動態渲染 -->
         </div>
       </div>
 
@@ -115,7 +115,6 @@
           </div>
           <span class="badge badge-accent">導師專用文章與資源</span>
         </div>
-        <!-- JS 動態渲染歸類至導師專區的網頁 -->
         <div class="pages-grid" id="homeTeacherPagesGrid"></div>
       </div>
 
@@ -137,7 +136,7 @@
         <div class="page-header">
           <div class="breadcrumb"><a href="#home">首頁</a> / <span>校內特教業務版面</span></div>
           <h1><i data-lucide="shield-lock" class="text-warning"></i> 校內特教業務版面 (🔒 密碼防護)</h1>
-          <p>保護吉安國小校內特教個案管理、轉介前介入表格、IEP 記錄與內部會議文件。</p>
+          <p>保護吉安國小校內特教個案管理、轉介前介入表格、IEP 記錄與內部特生考試服務雲。</p>
         </div>
 
         <!-- 密碼驗證卡片 (未解鎖時顯示) -->
@@ -145,7 +144,7 @@
           <div class="password-card-header">
             <div class="lock-circle"><i data-lucide="lock"></i></div>
             <h2>請輸入存取密碼</h2>
-            <p>本版面為校內教職員專用，請輸入授權密碼以存取校內特教業務文件。</p>
+            <p>本版面為校內教職員專用，請輸入授權密碼以存取校內特教業務文件與特生考試服務雲。</p>
           </div>
           <form id="internalPasswordForm" class="password-form">
             <div class="form-group">
@@ -163,12 +162,12 @@
           </div>
 
           <div class="section-header" style="margin-top: 1.5rem;">
-            <h2><i data-lucide="folder-lock" class="text-primary"></i> 校內特教業務專屬動態網頁</h2>
-            <p>僅歸類在「校內特教業務版面」之特教表格、評估工具與個案注意事項</p>
+            <h2><i data-lucide="folder-lock" class="text-primary"></i> 校內特教業務與網站服務按鈕</h2>
+            <p>點選下方網站名稱按鈕即可自動跳轉至指定特教服務雲或內部網頁</p>
           </div>
 
           <div class="pages-grid" id="internalPagesGrid">
-            <!-- JS 動態渲染內部網頁 -->
+            <!-- JS 動態渲染內部網頁與網站名稱跳轉按鈕 -->
           </div>
         </div>
 
@@ -236,7 +235,7 @@
       </div>
 
       <div class="modal-tabs">
-        <button class="tab-btn active" data-tab="tabPages"><i data-lucide="file-text"></i> 動態網頁管理 (<span id="countAdminPages">0</span>)</button>
+        <button class="tab-btn active" data-tab="tabPages"><i data-lucide="file-text"></i> 動態網頁與網站管理 (<span id="countAdminPages">0</span>)</button>
         <button class="tab-btn" data-tab="tabLinks"><i data-lucide="link"></i> 核心連結管理 (<span id="countAdminLinks">0</span>)</button>
         <button class="tab-btn" data-tab="tabBackup"><i data-lucide="database"></i> 備份與匯入</button>
       </div>
@@ -246,16 +245,16 @@
         <!-- Tab 1: 動態網頁管理 -->
         <div class="tab-content active" id="tabPages">
           <div class="tab-action-bar">
-            <h4>自訂特教網頁清單</h4>
-            <button class="btn btn-primary btn-sm" id="btnCreateNewPage"><i data-lucide="plus"></i> 新增網頁</button>
+            <h4>自訂特教網頁與網站清單</h4>
+            <button class="btn btn-primary btn-sm" id="btnCreateNewPage"><i data-lucide="plus"></i> 新增網頁/網站</button>
           </div>
           <div class="table-wrapper">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>網頁標題</th>
+                  <th>網頁/網站名稱</th>
                   <th>發布版面</th>
-                  <th>Slug URL</th>
+                  <th>網址 / Slug</th>
                   <th>分類</th>
                   <th>狀態</th>
                   <th>操作</th>
@@ -270,26 +269,26 @@
           <!-- 新增/編輯網頁表單區 -->
           <div class="form-container hidden shadow-card" id="pageFormContainer">
             <div class="form-header">
-              <h4 id="pageFormTitle">新增特教網頁</h4>
+              <h4 id="pageFormTitle">新增特教網頁 / 網站</h4>
               <button class="btn btn-text btn-sm" id="btnCancelPageForm">取消</button>
             </div>
             <form id="pageForm">
               <input type="hidden" id="formPageId">
               <div class="form-row">
                 <div class="form-group">
-                  <label for="formPageTitle">網頁標題 *</label>
-                  <input type="text" id="formPageTitle" required placeholder="例如：花蓮縣特教專團線上申請系統">
+                  <label for="formPageTitle">網頁 / 網站名稱 *</label>
+                  <input type="text" id="formPageTitle" required placeholder="例如：特生考試服務服務雲">
                 </div>
                 <div class="form-group">
-                  <label for="formPageSlug">網頁網址 Slug *</label>
-                  <input type="text" id="formPageSlug" required placeholder="例如：special-ed-system">
+                  <label for="formPageSlug">網頁網址 Slug 或 完整網址 *</label>
+                  <input type="text" id="formPageSlug" required placeholder="例如：special-exam-cloud 或 https://regal-tiramisu-ecaf8b.netlify.app/">
+                  <small class="text-muted">（即使在此處貼上 https:// 完整網址，系統亦會智慧辨識為外跳按鈕連結，請放心填寫！）</small>
                 </div>
               </div>
 
-              <!-- 新增選填外跳網址欄位 -->
               <div class="form-group">
-                <label for="formPageExternalUrl"><i data-lucide="external-link" style="width:14px;"></i> 外部跳轉網址 (選填，若填寫則點擊選單將直接跳轉開啟該網站)</label>
-                <input type="url" id="formPageExternalUrl" placeholder="https://example.com (留空則正常在站內渲染頁面)">
+                <label for="formPageExternalUrl"><i data-lucide="external-link" style="width:14px;"></i> 外部跳轉網址 (填寫後，點選「網站名稱按鈕」將自動跳轉至該網站)</label>
+                <input type="url" id="formPageExternalUrl" placeholder="https://regal-tiramisu-ecaf8b.netlify.app/ (若已在 Slug 輸入網址可留空)">
               </div>
 
               <div class="form-row">
@@ -319,9 +318,8 @@
                 </label>
               </div>
 
-              <!-- 網頁內容編輯器 (含 內嵌網頁 iframe 快捷按鈕與提示) -->
               <div class="form-group">
-                <label for="formPageContent">網頁內容 (支援標準 Markdown 語法與 iframe 畫面內嵌) *</label>
+                <label for="formPageContent">網頁/網站說明內容 (支援標準 Markdown 語法與 iframe 畫面內嵌) *</label>
                 <div class="md-editor-toolbar">
                   <button type="button" class="md-btn" data-md="## ">H2 標題</button>
                   <button type="button" class="md-btn" data-md="### ">H3 標題</button>
@@ -332,20 +330,10 @@
                   <button type="button" class="md-btn" data-md="> 提示文字">引用區塊</button>
                   <button type="button" class="md-btn md-btn-highlight" id="btnAddIframeCode"><i data-lucide="layout"></i> 內嵌網頁畫面 (iframe)</button>
                 </div>
-                <div class="form-tip-box">
-                  <i data-lucide="info" style="width:16px; flex-shrink:0;"></i>
-                  <div>
-                    <strong>💡 如何讓點選連結後在網頁直接呈現「連結的網頁畫面」？</strong>
-                    <ol style="margin-left: 1.25rem; margin-top: 0.25rem;">
-                      <li><strong>方法 A (在網頁內部內嵌畫面)</strong>：點擊上方 <code>[ 內嵌網頁畫面 (iframe) ]</code> 按鈕，輸入您要顯示的網站網址，即可在內文中直接顯示該網站實時視窗。</li>
-                      <li><strong>方法 B (點選選單直接跳轉開啟外站)</strong>：直接在上方【外部跳轉網址】填入連結，發布後點選選單項目將自動跳轉開啟目標網站。</li>
-                    </ol>
-                  </div>
-                </div>
-                <textarea id="formPageContent" rows="10" required placeholder="請在此輸入網頁詳細內容（支援 Markdown 標題、表格、連結、iframe 視窗內嵌...）"></textarea>
+                <textarea id="formPageContent" rows="8" required placeholder="請在此輸入網站說明或詳細內容..."></textarea>
               </div>
               <div class="form-actions">
-                <button type="submit" class="btn btn-primary"><i data-lucide="check"></i> 儲存網頁</button>
+                <button type="submit" class="btn btn-primary"><i data-lucide="check"></i> 儲存網頁與網站設定</button>
               </div>
             </form>
           </div>
@@ -426,7 +414,7 @@
             <div class="backup-card">
               <i data-lucide="download" class="backup-icon text-primary"></i>
               <h4>匯出系統 JSON 備份</h4>
-              <p>將目前所有的公開/導師專區/校內網頁與特教連結匯出為 .json 檔案保存。</p>
+              <p>將目前所有的公開/導師專區/校內網頁、特生考試服務雲與特教連結匯出為 .json 檔案保存。</p>
               <button class="btn btn-outline" id="btnExportBackup"><i data-lucide="download"></i> 下載 JSON 備份檔</button>
             </div>
 
@@ -467,6 +455,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260813_04"></script>
+  <script src="app.js?v=20260813_05"></script>
 </body>
 </html>

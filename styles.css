@@ -1036,6 +1036,36 @@ body {
   transition: var(--transition);
 }
 
+.btn-redirect-target {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.65rem 1.1rem;
+  margin-top: 0.75rem;
+  box-shadow: 0 3px 10px rgba(43, 108, 176, 0.25);
+  border: none;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+}
+
+.btn-redirect-target:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(43, 108, 176, 0.35);
+  background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+}
+
+.domain-text {
+  font-size: 0.8rem;
+  font-family: monospace;
+  word-break: break-all;
+}
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {

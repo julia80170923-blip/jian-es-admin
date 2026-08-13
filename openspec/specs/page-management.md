@@ -1,20 +1,15 @@
-# 動態網頁管理與畫面內嵌功能規格 (Page Management & Web Embedding Spec)
+# 動態網頁管理與多網站按鈕跳轉功能規格 (Multi-Site & Auto-Redirect Spec)
 
 ## Requirement Statements (EARS-style)
 
-- **[REQ-PAGE-01]** The system **SHALL** allow dynamic page contents to render embedded external websites via `<iframe>` HTML tags.
-- **[REQ-PAGE-02]** The Admin Panel Markdown toolbar **SHALL** provide a dedicated button `[ 內嵌網頁 (iframe) ]` to instantly insert high-definition iframe embed code (`<iframe src="https://..." width="100%" height="650px"></iframe>`).
-- **[REQ-PAGE-03]** The system **SHALL** provide an optional "外部跳轉網址 (選填)" (`externalUrl`) field in the Page Creation form.
-- **[REQ-PAGE-04]** If a page has an `externalUrl` specified, clicking the page link in the navigation menu or card grid **SHALL** directly open the target external URL in a new browser tab.
+- **[REQ-PAGE-01]** The system **SHALL** allow administrators to continuously add multiple custom websites/pages while retaining all existing pages and presets.
+- **[REQ-PAGE-02]** If an administrator inputs a complete web URL (`http://` or `https://`) in the "Slug" field or "外部跳轉網址" field, the system **SHALL** automatically parse it as an external redirect URL and sanitize the Slug automatically.
+- **[REQ-PAGE-03]** For every page configured with an external URL, the system **SHALL** render a prominent button displaying the website title (e.g. `🔗 前往【特生考試服務服務雲】 ↗`).
+- **[REQ-PAGE-04]** Clicking the website title button **SHALL** automatically redirect and open the target website in a new browser tab.
 
 ## Scenarios (BDD Given/When/Then)
 
-### Scenario 1: 網頁內容嵌入外部網站畫面
-- **GIVEN** 管理員在控制台編輯網頁內容
-- **WHEN** 管理員點擊工具列「內嵌網頁 (iframe)」按鈕，填入 URL `https://special.hlc.edu.tw` 並發布
-- **THEN** 前台打開該網頁時，頁面內包含一個寬 100%、高 650px 的獨立視窗，直接展示目標網站畫面。
-
-### Scenario 2: 設定選單點擊自動跳轉外站
-- **GIVEN** 管理員在【外部跳轉網址 (選填)】填寫 `https://www.set.edu.tw` 並發布
-- **WHEN** 訪客點擊導覽列中的該網頁項目
-- **THEN** 系統直接在新分頁中開啟 `https://www.set.edu.tw` 網站畫面。
+### Scenario 1: 新增多個網站並測試按鈕自動跳轉
+- **GIVEN** 管理員在控制台新增「特生考試服務服務雲」，網址填寫 `https://regal-tiramisu-ecaf8b.netlify.app/`
+- **WHEN** 管理員儲存後返回前台
+- **THEN** 前台版面上顯示醒目的「🔗 前往 特生考試服務服務雲 ↗」按鈕，點擊該按鈕自動跳轉至 Netlify 服務網站，且原先的特教網頁與門戶均完好保留。

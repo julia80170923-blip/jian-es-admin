@@ -3,7 +3,7 @@
  * OpenSpec (Spec-Driven Development, SDD) Engine & Password Protection
  */
 
-// 1. 吉安國小特教預載核心資料 (Presets - 4 大核心門戶)
+// 1. 吉安國小特教預載核心資料 (Presets - 4 大核心門戶 & 特教服務雲)
 const DEFAULT_PRESETS = {
   links: [
     {
@@ -49,6 +49,17 @@ const DEFAULT_PRESETS = {
   ],
   pages: [
     {
+      id: "page-custom-exam-cloud",
+      title: "特生考試服務服務雲",
+      slug: "special-exam-service-cloud",
+      targetSection: "internal", // 🔒 校內特教業務
+      category: "資源班專區",
+      externalUrl: "https://regal-tiramisu-ecaf8b.netlify.app/",
+      isPublished: true,
+      updatedAt: "2026-08-13",
+      content: `點擊下方按鈕將自動跳轉開啟「特生考試服務服務雲」官方網站。`
+    },
+    {
       id: "page-sp-101",
       title: "115學年度資源班課程規劃與課表說明",
       slug: "resource-class-timetable",
@@ -63,12 +74,7 @@ const DEFAULT_PRESETS = {
 ### 一、 服務對象與抽離科目
 1. **國語文抽取/抽離班**：著重識字、閱讀理解與句型摘要。
 2. **數學抽離班**：著重建構數學概念、應用題語意拆解與實作操作。
-3. **學習策略與情緒行為輔導**：協助學生增進專注力、社會技巧與自我管理能力。
-
-### 二、 115 學年度資源班上課守則
-- 請依照課表時間於鐘響後 **3 分鐘內** 至資源班教室報到。
-- 攜帶原班課本、資源班專用作業本與基本文具。
-- 尊重同儕，遵守「專心聽、齊心學」之課堂規範。`
+3. **學習策略與情緒行為輔導**：協助學生增進專注力、社會技巧與自我管理能力。`
     },
     {
       id: "page-sp-102",
@@ -85,10 +91,7 @@ const DEFAULT_PRESETS = {
 ### 一、 轉介前介入 6 大步驟
 1. **導師觀察與初篩**：發現學生學習或行為適應明顯落後同儕時，記錄觀察行為表。
 2. **實施普通教育輔導措施**：實施至少 **6 週** 之教學策略調整與輔導介入。
-3. **輔導室個案研討**：填寫「轉介前介入觀察表」送交輔導室特教組。
-4. **施測與心評排程**：特教團隊協助實施魏氏智力測驗或其他適性評量工具。
-5. **校內鑑輔初審**：召開校內特教推行委員會 (特推會) 審查個案資料。
-6. **送陳花蓮縣鑑輔會**：依花蓮縣政府規定時程送陳鑑定安置。`
+3. **輔導室個案研討**：填寫「轉介前介入觀察表」送交輔導室特教組。`
     },
     {
       id: "page-sp-103",
@@ -100,31 +103,7 @@ const DEFAULT_PRESETS = {
       updatedAt: "2026-08-13",
       content: `## IEP 個別化教育計畫 (Individualized Education Program)
 
-依據《特殊教育法》第 28 條規定，學校應為每位經鑑輔會鑑定通過之特教學生訂定 IEP 個別化教育計畫。
-
-### 一、 IEP 會議辦理時程
-| 項目 | 辦理時間 | 參與人員 |
-| --- | --- | --- |
-| **期初 IEP 會議** | 開學後 **30 日內** 召開 | 導師、特教教師、家長、行政代表、專團人員 |
-| **期末 IEP 檢討** | 學期結束前 **2 週** 完成 | 導師、特教教師、家長 |
-
-### 二、 導師與科任教師協助重點
-- **評量調整申請**：若學童需延長考試時間、報讀服務或放大試卷，請於 IEP 會議中確認並登錄。
-- **轉介前介入**：普通班導師若發現潛在特殊需求學童，請先進行至少 6 週之轉介前介入觀察。`
-    },
-    {
-      id: "page-sp-embed-104",
-      title: "花蓮縣特教專團與專業服務系統 (網頁畫面內嵌範例)",
-      slug: "hlc-special-ed-embed",
-      targetSection: "public",
-      category: "特教業務專區",
-      isPublished: true,
-      updatedAt: "2026-08-13",
-      content: `## 花蓮縣特教專團與專業服務系統 (即時內嵌視窗)
-
-以下為「花蓮縣特殊教育資源網」即時內嵌網頁畫面：
-
-<iframe src="https://special.hlc.edu.tw" width="100%" height="650px" style="width:100%; height:650px; border:1px solid #e2e8f0; border-radius:8px;"></iframe>`
+依據《特殊教育法》第 28 條規定，學校應為每位經鑑輔會鑑定通過之特教學生訂定 IEP 個別化教育計畫。`
     }
   ]
 };
@@ -143,7 +122,15 @@ class SpecialEdAppState {
 
   loadPages() {
     const data = localStorage.getItem(this.STORAGE_KEY_PAGES);
-    return data ? JSON.parse(data) : [...DEFAULT_PRESETS.pages];
+    if (!data) return [...DEFAULT_PRESETS.pages];
+    
+    let loaded = JSON.parse(data);
+    // 確保預載之「特生考試服務服務雲」若不存在則自動補全
+    const hasExamCloud = loaded.some(p => p.title === "特生考試服務服務雲" || p.externalUrl === "https://regal-tiramisu-ecaf8b.netlify.app/");
+    if (!hasExamCloud) {
+      loaded.unshift(DEFAULT_PRESETS.pages[0]);
+    }
+    return loaded;
   }
 
   loadLinks() {
@@ -189,14 +176,16 @@ class SpecialEdAppState {
     sessionStorage.removeItem("jian_sp_unlocked");
   }
 
-  // Page CRUD
+  // Page/Website CRUD (確保可獨立新增多個網站，完全不影響舊網頁設定)
   addOrUpdatePage(pageData) {
-    const index = this.pages.findIndex(p => p.id === pageData.id || (pageData.id === "" && p.slug === pageData.slug));
+    const uniqueId = pageData.id || ("page-custom-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6));
+    const index = this.pages.findIndex(p => p.id === pageData.id && pageData.id !== "");
+
     if (index >= 0) {
       this.pages[index] = { ...this.pages[index], ...pageData, updatedAt: new Date().toISOString().split("T")[0] };
     } else {
       const newPage = {
-        id: pageData.id || "page-custom-" + Date.now(),
+        id: uniqueId,
         targetSection: pageData.targetSection || "public",
         updatedAt: new Date().toISOString().split("T")[0],
         ...pageData
@@ -218,7 +207,7 @@ class SpecialEdAppState {
       this.links[index] = { ...this.links[index], ...linkData };
     } else {
       const newLink = {
-        id: linkData.id || "link-custom-" + Date.now(),
+        id: linkData.id || ("link-custom-" + Date.now()),
         order: this.links.length + 1,
         ...linkData
       };
@@ -305,7 +294,7 @@ function renderHomeView() {
   renderHomePages();
 }
 
-// 導覽列動態下拉選單 (選單點擊若有 externalUrl 則開啟外站)
+// 導覽列動態下拉選單
 function renderNavDropdowns() {
   const publicPublished = appState.pages.filter(p => p.isPublished && (p.targetSection === "public" || p.targetSection === "teacher" || !p.targetSection));
   const resourcePages = publicPublished.filter(p => p.category === "資源班專區");
@@ -348,34 +337,16 @@ function renderHomePinnedLinks() {
   initIcons();
 }
 
-// 首頁動態網頁渲染：分別渲染「導師專區 (teacher)」與「公開特教專區網頁 (public)」
+// 首頁動態網頁與網站名稱跳轉按鈕渲染
 function renderHomePages() {
-  // 1. 動態渲染「導師專區網頁」
+  // 1. 動態渲染「導師專區」
   const teacherPages = appState.pages.filter(p => p.isPublished && p.targetSection === "teacher");
   const teacherGrid = document.getElementById("homeTeacherPagesGrid");
 
   if (teacherPages.length === 0) {
-    teacherGrid.innerHTML = `<p class="text-muted" style="grid-column: 1/-1;">目前尚無歸類至導師專區之動態網頁。可於管理控制台新增網頁並選擇「導師專區」。</p>`;
+    teacherGrid.innerHTML = `<p class="text-muted" style="grid-column: 1/-1;">目前尚無歸類至導師專區之動態網頁。</p>`;
   } else {
-    teacherGrid.innerHTML = teacherPages.map(page => {
-      const href = page.externalUrl ? page.externalUrl : `#page/${page.slug}`;
-      const target = page.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
-      const btnText = page.externalUrl ? '開啟目標網站 <i data-lucide="external-link"></i>' : '閱讀文章 <i data-lucide="chevron-right"></i>';
-
-      return `
-        <div class="page-card shadow-sm border-warning">
-          <div class="page-card-header">
-            <span class="badge badge-accent">🍎 導師專區</span>
-            <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
-          </div>
-          <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
-          <div class="page-card-meta">
-            <span>更新：${page.updatedAt}</span>
-            <a href="${href}" ${target} class="btn btn-outline btn-sm">${btnText}</a>
-          </div>
-        </div>
-      `;
-    }).join("");
+    teacherGrid.innerHTML = teacherPages.map(page => buildPageCardHtml(page, true)).join("");
   }
 
   // 2. 動態渲染「公開特教專區網頁」
@@ -385,28 +356,54 @@ function renderHomePages() {
   if (publicPages.length === 0) {
     publicGrid.innerHTML = `<p class="text-muted" style="grid-column: 1/-1;">目前尚無公開發布之特教專區網頁。</p>`;
   } else {
-    publicGrid.innerHTML = publicPages.map(page => {
-      const href = page.externalUrl ? page.externalUrl : `#page/${page.slug}`;
-      const target = page.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
-      const btnText = page.externalUrl ? '開啟目標網站 <i data-lucide="external-link"></i>' : '閱讀全文 <i data-lucide="chevron-right"></i>';
-
-      return `
-        <div class="page-card shadow-sm">
-          <div class="page-card-header">
-            <span class="badge badge-primary">${escapeHtml(page.category)}</span>
-            <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
-          </div>
-          <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
-          <div class="page-card-meta">
-            <span>更新：${page.updatedAt}</span>
-            <a href="${href}" ${target} class="btn btn-outline btn-sm">${btnText}</a>
-          </div>
-        </div>
-      `;
-    }).join("");
+    publicGrid.innerHTML = publicPages.map(page => buildPageCardHtml(page, false)).join("");
   }
 
   initIcons();
+}
+
+// 卡片元件生成器 (呈現網站名稱按鈕，點選自動跳轉)
+function buildPageCardHtml(page, isTeacher = false) {
+  const badgeClass = isTeacher ? 'badge-accent' : 'badge-primary';
+  const badgeText = isTeacher ? '🍎 導師專區' : escapeHtml(page.category);
+  const borderClass = isTeacher ? 'border-warning' : '';
+
+  if (page.externalUrl) {
+    // 外部網站模式：顯示醒目的網站名稱按鈕，點擊自動跳轉
+    return `
+      <div class="page-card shadow-sm ${borderClass}">
+        <div class="page-card-header">
+          <span class="badge ${badgeClass}">${badgeText}</span>
+          <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+        </div>
+        <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
+        <div>
+          <a href="${page.externalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-redirect-target btn-block">
+            <i data-lucide="external-link"></i> 前往【${escapeHtml(page.title)}】 ↗
+          </a>
+        </div>
+        <div class="page-card-meta" style="margin-top:0.75rem;">
+          <span>外跳連結服務</span>
+          <span>更新：${page.updatedAt}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // 一般站內文章模式
+  return `
+    <div class="page-card shadow-sm ${borderClass}">
+      <div class="page-card-header">
+        <span class="badge ${badgeClass}">${badgeText}</span>
+        <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
+      </div>
+      <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
+      <div class="page-card-meta">
+        <span>更新：${page.updatedAt}</span>
+        <a href="#page/${page.slug}" class="btn btn-outline btn-sm">閱讀全文 <i data-lucide="chevron-right"></i></a>
+      </div>
+    </div>
+  `;
 }
 
 function buildLinkCardHtml(link) {
@@ -469,27 +466,9 @@ function renderInternalView() {
 
     const internalPages = appState.pages.filter(p => p.targetSection === "internal");
     if (internalPages.length === 0) {
-      pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁。可在管理控制台新增網頁並選擇「校內特教業務版面」。</p>`;
+      pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁/網站。可在管理控制台新增網頁並選擇「校內特教業務版面」。</p>`;
     } else {
-      pagesGrid.innerHTML = internalPages.map(page => {
-        const href = page.externalUrl ? page.externalUrl : `#page/${page.slug}`;
-        const target = page.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
-        const btnText = page.externalUrl ? '開啟外部檔案 <i data-lucide="external-link"></i>' : '開啟檔案 <i data-lucide="chevron-right"></i>';
-
-        return `
-          <div class="page-card shadow-sm border-warning">
-            <div class="page-card-header">
-              <span class="badge badge-accent"><i data-lucide="lock" style="width:12px;"></i> 校內業務</span>
-              <h3 class="page-card-title">${escapeHtml(page.title)}</h3>
-            </div>
-            <p class="page-card-excerpt">${escapeHtml(cleanMarkdownExcerpt(page.content))}</p>
-            <div class="page-card-meta">
-              <span>更新：${page.updatedAt}</span>
-              <a href="${href}" ${target} class="btn btn-outline btn-sm">${btnText}</a>
-            </div>
-          </div>
-        `;
-      }).join("");
+      pagesGrid.innerHTML = internalPages.map(page => buildPageCardHtml(page, false)).join("");
     }
   } else {
     passwordCard.classList.remove("hidden");
@@ -556,11 +535,28 @@ function renderDynamicPageView(slug) {
     sectionBadge.classList.add("hidden");
   }
 
-  if (window.marked) {
-    container.innerHTML = marked.parse(page.content);
-  } else {
-    container.innerHTML = `<pre>${escapeHtml(page.content)}</pre>`;
+  let bodyHtml = "";
+  if (page.externalUrl) {
+    bodyHtml += `
+      <div style="background: var(--primary-light); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid #bee3f8; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <strong style="color: var(--primary); font-size: 1.05rem;">🔗 這是外跳服務網站：「${escapeHtml(page.title)}」</strong>
+          <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">若點擊下方按鈕，瀏覽器將自動在分頁中開啟目標網站。</p>
+        </div>
+        <a href="${page.externalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          <i data-lucide="external-link"></i> 前往【${escapeHtml(page.title)}】網站 ↗
+        </a>
+      </div>
+    `;
   }
+
+  if (window.marked) {
+    bodyHtml += marked.parse(page.content);
+  } else {
+    bodyHtml += `<pre>${escapeHtml(page.content)}</pre>`;
+  }
+
+  container.innerHTML = bodyHtml;
 
   document.getElementById("editCurrentPageBtn").onclick = () => {
     openAdminModalDirect("tabPages");
@@ -633,7 +629,11 @@ function initAdminModal() {
     if (val) {
       const matchPage = appState.pages.find(p => p.title.toLowerCase().includes(val) || p.slug.toLowerCase().includes(val));
       if (matchPage) {
-        window.location.hash = `#page/${matchPage.slug}`;
+        if (matchPage.externalUrl) {
+          window.open(matchPage.externalUrl, "_blank");
+        } else {
+          window.location.hash = `#page/${matchPage.slug}`;
+        }
       } else {
         alert(`搜尋「${val}」：未找到完全匹配的標題，請參閱首頁導師專區與核心連結。`);
       }
@@ -655,7 +655,6 @@ function initAdminModal() {
     btn.onclick = () => {
       const textarea = document.getElementById("formPageContent");
       if (btn.id === "btnAddIframeCode") {
-        // 點擊「內嵌網頁 (iframe)」按鈕，彈出網址輸入框
         const inputUrl = prompt("請輸入要內嵌呈現在網頁中的目標網站 URL：", "https://special.hlc.edu.tw");
         if (inputUrl && inputUrl.trim() !== "") {
           const iframeCode = `\n\n<iframe src="${inputUrl.trim()}" width="100%" height="650px" style="width:100%; height:650px; border:1px solid #e2e8f0; border-radius:8px;"></iframe>\n\n`;
@@ -679,15 +678,29 @@ function initAdminModal() {
     };
   });
 
+  // 網頁與網站儲存表單 (智慧 URL 解析容錯)
   document.getElementById("pageForm").onsubmit = (e) => {
     e.preventDefault();
     const targetSec = document.getElementById("formPageTargetSection").value;
-    const extUrl = document.getElementById("formPageExternalUrl").value.trim();
+    let rawSlug = document.getElementById("formPageSlug").value.trim();
+    let extUrl = document.getElementById("formPageExternalUrl").value.trim();
+    const pageTitle = document.getElementById("formPageTitle").value.trim();
+
+    // 智慧 URL 解析：若使用者在 Slug 欄位直接貼上以 http:// 或 https:// 開頭的完整網址 (如圖1所示)
+    if (rawSlug.startsWith("http://") || rawSlug.startsWith("https://")) {
+      if (!extUrl) {
+        extUrl = rawSlug; // 自動轉儲為外部跳轉網址
+      }
+      // 生成乾淨的站內 Slug 代碼
+      rawSlug = "site-" + Date.now().toString().slice(-6);
+    } else {
+      rawSlug = rawSlug.toLowerCase().replace(/\s+/g, "-");
+    }
 
     const pageData = {
       id: document.getElementById("formPageId").value,
-      title: document.getElementById("formPageTitle").value.trim(),
-      slug: document.getElementById("formPageSlug").value.trim().toLowerCase().replace(/\s+/g, "-"),
+      title: pageTitle,
+      slug: rawSlug,
       targetSection: targetSec,
       externalUrl: extUrl,
       category: document.getElementById("formPageCategory").value,
@@ -703,7 +716,11 @@ function initAdminModal() {
     if (targetSec === "teacher") targetName = "🍎 導師專區";
     if (targetSec === "internal") targetName = "🔒 校內特教業務版面";
     
-    alert(`特教網頁已成功儲存！發布位置：${targetName}。`);
+    if (extUrl) {
+      alert(`已成功新增外部網站「${pageTitle}」！已在「${targetName}」版面生成專屬網站名稱跳轉按鈕。`);
+    } else {
+      alert(`特教網頁「${pageTitle}」已成功儲存於「${targetName}」。`);
+    }
   };
 
   document.getElementById("linkForm").onsubmit = (e) => {
@@ -727,10 +744,10 @@ function initAdminModal() {
   document.getElementById("btnTriggerImport").onclick = () => document.getElementById("importJsonFile").click();
   document.getElementById("importJsonFile").onchange = importBackupJson;
   document.getElementById("btnResetPresets").onclick = () => {
-    if (confirm("確定要將連結與網頁還原為吉安國小預載的 4 大核心門戶預設值嗎？")) {
+    if (confirm("確定要還原預載門戶與預設特教網站嗎？（注意：此操作不會清空已備份之檔案）")) {
       appState.resetToPresets();
       renderApp();
-      alert("已成功還原為 4 大核心特教門戶與吉安國小預設值！");
+      alert("已成功還原預設值！");
     }
   };
 }
@@ -792,7 +809,7 @@ function updateAdminTables() {
 function showPageForm(page = null) {
   document.getElementById("pageFormContainer").classList.remove("hidden");
   if (page) {
-    document.getElementById("pageFormTitle").innerText = "編輯特教網頁";
+    document.getElementById("pageFormTitle").innerText = "編輯特教網頁 / 網站";
     document.getElementById("formPageId").value = page.id;
     document.getElementById("formPageTitle").value = page.title;
     document.getElementById("formPageSlug").value = page.slug;
@@ -802,7 +819,7 @@ function showPageForm(page = null) {
     document.getElementById("formPagePublished").checked = page.isPublished;
     document.getElementById("formPageContent").value = page.content;
   } else {
-    document.getElementById("pageFormTitle").innerText = "新增特教網頁";
+    document.getElementById("pageFormTitle").innerText = "新增特教網頁 / 網站";
     document.getElementById("pageForm").reset();
     document.getElementById("formPageId").value = "";
     document.getElementById("formPageTargetSection").value = "public";
@@ -821,7 +838,7 @@ window.editAdminPage = function(id) {
 };
 
 window.deleteAdminPage = function(id) {
-  if (confirm("確定要刪除此特教網頁嗎？")) {
+  if (confirm("確定要刪除此特教網頁/網站嗎？")) {
     appState.deletePage(id);
     renderApp();
   }
@@ -864,7 +881,7 @@ window.deleteAdminLink = function(id) {
 function exportBackupJson() {
   const backupData = {
     appName: "jian-es-special-ed-admin",
-    version: "1.3.0",
+    version: "1.4.0",
     exportedAt: new Date().toISOString(),
     pages: appState.pages,
     links: appState.links
@@ -891,7 +908,7 @@ function importBackupJson(e) {
         appState.savePages();
         appState.saveLinks();
         renderApp();
-        alert("成功匯入 JSON 備份資料！所有公開/導師/校內網頁與核心連結已更新。");
+        alert("成功匯入 JSON 備份資料！多個特教網站與核心連結已更新。");
       } else {
         alert("匯入失敗：JSON 格式無效。");
       }

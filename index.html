@@ -15,11 +15,11 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Marked.js for Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260813_02">
+  <link rel="stylesheet" href="styles.css?v=20260813_03">
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
 
-  <!-- 頂部導覽列 (Navbar - 已移除冗餘之特教核心連結) -->
+  <!-- 頂部導覽列 -->
   <header class="navbar" data-openspec-component="navbar">
     <div class="nav-container">
       <a href="#home" class="brand">
@@ -67,7 +67,7 @@
     </div>
   </header>
 
-  <!-- 主要內容區域 (Main Content Views) -->
+  <!-- 主要內容區域 -->
   <main class="main-content">
     
     <!-- 1. 首頁視圖 (Home View) -->
@@ -88,6 +88,7 @@
           </div>
           <div class="hero-stats">
             <div class="stat-item"><strong id="statLinksCount">4</strong><span>核心特教門戶</span></div>
+            <div class="stat-item"><strong id="statTeacherPagesCount">0</strong><span>導師專區文章</span></div>
             <div class="stat-item"><strong id="statPagesCount">0</strong><span>公開特教頁面</span></div>
             <div class="stat-item"><strong id="statInternalPagesCount">0</strong><span>校內業務網頁</span></div>
           </div>
@@ -105,57 +106,24 @@
         </div>
       </div>
 
-      <!-- 2. 🍎 導師專區 (Homeroom Teacher Section - 新增於核心連結下方) -->
+      <!-- 2. 🍎 導師專區 (Homeroom Teacher Section - 已移除非動態硬編碼卡片，完全由控制台動態渲染) -->
       <div class="container section-padding bg-alt">
         <div class="section-header space-between">
           <div>
             <h2><i data-lucide="graduation-cap" class="text-warning"></i> 🍎 導師專區 (Homeroom Teacher Section)</h2>
             <p>專為普通班導師設計之轉介前介入指引、特殊考試服務申請與融合教育實用資源</p>
           </div>
-          <span class="badge badge-accent">導師專用指引</span>
+          <span class="badge badge-accent">導師專用文章與資源</span>
         </div>
-        <div class="quick-cards-grid" id="teacherSectionGrid">
-          <div class="quick-card shadow-sm border-warning">
-            <div class="quick-card-icon" style="background:#feebc8; color:#c05621;"><i data-lucide="clipboard-edit"></i></div>
-            <div class="quick-card-info">
-              <h3>身心障礙學生轉介前介入指引</h3>
-              <p>包含 6 週觀察介入紀錄表下載、輔導策略調整與個案研討填寫說明。</p>
-            </div>
-          </div>
-          <div class="quick-card shadow-sm">
-            <div class="quick-card-icon" style="background:var(--primary-light); color:var(--primary);"><i data-lucide="file-check-2"></i></div>
-            <div class="quick-card-info">
-              <h3>定期評量特殊考試服務申請</h3>
-              <p>導師幫學童申請延長考試時間 (20%)、獨立試場與試題報讀服務說明。</p>
-            </div>
-          </div>
-          <div class="quick-card shadow-sm">
-            <div class="quick-card-icon" style="background:var(--secondary-light); color:var(--secondary);"><i data-lucide="book-marked"></i></div>
-            <div class="quick-card-info">
-              <h3>融合教育導師實用親師手冊</h3>
-              <p>班級特教生相處技巧、情緒行為介入與親師溝通對話指引。</p>
-            </div>
-          </div>
-          <div class="quick-card shadow-sm">
-            <div class="quick-card-icon" style="background:var(--accent-light); color:var(--accent);"><i data-lucide="eye"></i></div>
-            <div class="quick-card-info">
-              <h3>特教學生身心特質觀察表</h3>
-              <p>學習落後、情緒行為、專注力與語言溝通特質檢核觀察表彙整。</p>
-            </div>
-          </div>
-        </div>
+        <!-- JS 動態渲染歸類至導師專區的網頁 -->
+        <div class="pages-grid" id="homeTeacherPagesGrid"></div>
       </div>
 
-      <!-- 3. 公開動態特教網頁 -->
+      <!-- 3. 公開特教專區網頁 (已刪除圖 4 之「⊕ 新增網頁」按鈕) -->
       <div class="container section-padding">
-        <div class="section-header space-between">
-          <div>
-            <h2><i data-lucide="file-text" class="text-success"></i> 公開特教專區網頁</h2>
-            <p>全校師生與家長皆可瀏覽之公開特教資訊與指引</p>
-          </div>
-          <button class="btn btn-secondary btn-sm" id="homeCreatePageBtn">
-            <i data-lucide="plus-circle"></i> 新增網頁
-          </button>
+        <div class="section-header">
+          <h2><i data-lucide="file-text" class="text-success"></i> 公開特教專區網頁</h2>
+          <p>全校師生與家長皆可瀏覽之公開特教資訊與指引</p>
         </div>
         <div class="pages-grid" id="homePagesGrid">
           <!-- JS 動態渲染 -->
@@ -163,7 +131,7 @@
       </div>
     </section>
 
-    <!-- 2. 🔒 校內特教業務版面視圖 (Internal Section View) -->
+    <!-- 2. 🔒 校內特教業務版面視圖 (Internal Section View - 已刪除圖 1 靜態表格區塊) -->
     <section id="viewInternal" class="view-section" data-openspec-view="internal-section">
       <div class="container section-padding">
         <div class="page-header">
@@ -172,7 +140,7 @@
           <p>保護吉安國小校內特教個案管理、轉介前介入表格、IEP 記錄與內部會議文件。</p>
         </div>
 
-        <!-- 密碼驗證卡片 (未解鎖時顯示 - 已刪除原明文密碼提示文字) -->
+        <!-- 密碼驗證卡片 (未解鎖時顯示) -->
         <div class="password-card shadow-card" id="internalPasswordCard">
           <div class="password-card-header">
             <div class="lock-circle"><i data-lucide="lock"></i></div>
@@ -187,7 +155,7 @@
           </form>
         </div>
 
-        <!-- 解鎖後顯示之校內特教內容 (已解鎖時顯示) -->
+        <!-- 解鎖後顯示之校內特教內容 (已解鎖時顯示 - 純動態網頁) -->
         <div class="internal-unlocked-content hidden" id="internalUnlockedContent">
           <div class="unlocked-status-bar">
             <span><i data-lucide="check-circle" class="text-success"></i> 已通過安全身分驗證（授權存取中）</span>
@@ -201,34 +169,6 @@
 
           <div class="pages-grid" id="internalPagesGrid">
             <!-- JS 動態渲染內部網頁 -->
-          </div>
-
-          <!-- 校內特教表單下載與管理專區 -->
-          <div class="section-header" style="margin-top: 2.5rem;">
-            <h2><i data-lucide="file-check" class="text-secondary"></i> 校內常用特教表單與個案工具</h2>
-          </div>
-          <div class="quick-cards-grid">
-            <div class="quick-card shadow-sm">
-              <div class="quick-card-icon" style="background:var(--accent-light); color:var(--accent);"><i data-lucide="clipboard-edit"></i></div>
-              <div class="quick-card-info">
-                <h3>轉介前介入觀察紀錄表</h3>
-                <p>導師對觀察學童進行 6 週介入輔導紀錄表下載與填寫說明。</p>
-              </div>
-            </div>
-            <div class="quick-card shadow-sm">
-              <div class="quick-card-icon" style="background:var(--primary-light); color:var(--primary);"><i data-lucide="users"></i></div>
-              <div class="quick-card-info">
-                <h3>IEP 個案會議記錄表</h3>
-                <p>下載個別化教育計畫會議紀錄空白表單與會議決議範本。</p>
-              </div>
-            </div>
-            <div class="quick-card shadow-sm">
-              <div class="quick-card-icon" style="background:var(--secondary-light); color:var(--secondary);"><i data-lucide="file-spreadsheet"></i></div>
-              <div class="quick-card-info">
-                <h3>心理評量測驗工具借閱</h3>
-                <p>校內魏氏智力測驗與魏氏兒童記憶力測驗工具保管名冊。</p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -281,7 +221,7 @@
     </div>
   </div>
 
-  <!-- 後台管理控制台 Modal (Admin Panel Modal) -->
+  <!-- 後台管理控制台 Modal -->
   <div class="modal-overlay" id="adminModal" data-openspec-component="admin-panel">
     <div class="modal-card">
       <div class="modal-header">
@@ -346,10 +286,12 @@
                 </div>
               </div>
               <div class="form-row">
+                <!-- 圖 3 需求：新增「🍎 導師專區」版面選項 -->
                 <div class="form-group">
                   <label for="formPageTargetSection">發布位置 / 版面 *</label>
                   <select id="formPageTargetSection" required>
                     <option value="public">🌐 網站連結庫 / 公開特教專區 (所有人可瀏覽)</option>
+                    <option value="teacher">🍎 導師專區 (所有人可瀏覽)</option>
                     <option value="internal">🔒 校內特教業務版面 (需輸入密碼 8523984 才能瀏覽)</option>
                   </select>
                 </div>
@@ -465,7 +407,7 @@
             <div class="backup-card">
               <i data-lucide="download" class="backup-icon text-primary"></i>
               <h4>匯出系統 JSON 備份</h4>
-              <p>將目前所有的公開/校內網頁與特教連結匯出為 .json 檔案保存。</p>
+              <p>將目前所有的公開/導師專區/校內網頁與特教連結匯出為 .json 檔案保存。</p>
               <button class="btn btn-outline" id="btnExportBackup"><i data-lucide="download"></i> 下載 JSON 備份檔</button>
             </div>
 
@@ -490,7 +432,7 @@
     </div>
   </div>
 
-  <!-- 頁尾 (Footer) -->
+  <!-- 頁尾 -->
   <footer class="footer">
     <div class="container footer-content">
       <div class="footer-info">
@@ -506,6 +448,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260813_02"></script>
+  <script src="app.js?v=20260813_03"></script>
 </body>
 </html>

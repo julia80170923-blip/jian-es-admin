@@ -2,20 +2,20 @@
 
 ## Requirement Statements (EARS-style)
 
-- **[REQ-PAGE-01]** The system **SHALL** provide a dedicated "導師專區" (Homeroom Teacher Section) on the Home View containing essential resources for general teachers.
-- **[REQ-PAGE-02]** The system **SHALL** require password verification (`8523984`) when a user attempts to open the Admin Control Panel Modal.
-- **[REQ-PAGE-03]** The system **SHALL NOT** display any explicit password hint text (such as "提示：預設密碼為吉安國小電話號碼 (8523984)") on the user interface.
-- **[REQ-PAGE-04]** The system **SHALL** allow administrators to assign created dynamic pages to either the Public Section or Internal Special Ed Section.
-- **[REQ-PAGE-05]** The system **SHALL** enforce password authentication (`8523984`) before granting access to the Internal Special Ed Section.
+- **[REQ-PAGE-01]** The system **SHALL** allow administrators to select one of 3 target sections when publishing a page: **"🌐 網站連結庫 / 公開特教專區" (`public`)**, **"🍎 導師專區" (`teacher`)**, or **"🔒 校內特教業務版面" (`internal`)**.
+- **[REQ-PAGE-02]** Pages assigned to **"🍎 導師專區" (`teacher`)** **SHALL** be dynamically rendered under the "導師專區" section on the Home View.
+- **[REQ-PAGE-03]** The system **SHALL NOT** render any hardcoded static preview cards in the "導師專區" or "校內常用特教表單與個案工具" sections.
+- **[REQ-PAGE-04]** The system **SHALL NOT** provide an "新增網頁" button directly on the front-end Home View; page creation **SHALL** only be accessed via the password-protected Admin Control Panel (`⚙️ 管理控制台`).
+- **[REQ-PAGE-05]** The system **SHALL** enforce password authentication (`8523984`) before granting access to the Admin Control Panel Modal or Internal Special Ed Section.
 
 ## Scenarios (BDD Given/When/Then)
 
-### Scenario 1: 進入管理控制台密碼驗證
-- **GIVEN** 使用者點擊頂部導覽列「管理控制台」
-- **WHEN** 系統彈出密碼輸入框，使用者輸入 `8523984` 並點擊確定
-- **THEN** 管理控制台 Modal 成功開啟；若輸入錯誤則提示密碼錯誤並拒絕開啟。
+### Scenario 1: 發布動態網頁至導師專區
+- **GIVEN** 管理員在控制台開啟「新增特教網頁」表單
+- **WHEN** 管理員填寫標題「身心障礙學生轉介前介入指引」、發布位置選擇「🍎 導師專區 (所有人可瀏覽)」並儲存
+- **THEN** 前台首頁的「導師專區」版面自動即時顯示該篇動態文章圖卡。
 
-### Scenario 2: 密碼提示文字隱藏
-- **GIVEN** 使用者進入「校內特教業務版面」
-- **WHEN** 畫面顯示密碼輸入卡片
-- **THEN** 卡片下方不含有任何暗示或包含 `8523984` 之明文提示文字。
+### Scenario 2: 前台按鈕清理
+- **GIVEN** 訪客瀏覽首頁「公開特教專區網頁」區塊
+- **WHEN** 畫面載入完成
+- **THEN** 標頭右側不含有任何「⊕ 新增網頁」按鈕。

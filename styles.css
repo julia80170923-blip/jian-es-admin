@@ -477,6 +477,10 @@ body {
   border-color: var(--primary);
 }
 
+.border-warning {
+  border-color: #feebc8 !important;
+}
+
 .quick-card-icon {
   width: 48px;
   height: 48px;
@@ -687,15 +691,6 @@ body {
   font-size: 1.2rem;
   letter-spacing: 0.15em;
   padding: 0.75rem;
-}
-
-.password-hint {
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  margin-top: 0.5rem;
 }
 
 .unlocked-status-bar {

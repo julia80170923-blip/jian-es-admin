@@ -3,7 +3,7 @@
  * OpenSpec (Spec-Driven Development, SDD) Engine & Password Protection
  */
 
-// 1. 吉安國小特教預載核心資料 (Presets - 僅保留 4 大核心門戶)
+// 1. 吉安國小特教預載核心資料 (Presets - 4 大核心門戶)
 const DEFAULT_PRESETS = {
   links: [
     {
@@ -52,7 +52,7 @@ const DEFAULT_PRESETS = {
       id: "page-sp-101",
       title: "115學年度資源班課程規劃與課表說明",
       slug: "resource-class-timetable",
-      targetSection: "public", // 公開專區
+      targetSection: "public",
       category: "資源班專區",
       isPublished: true,
       updatedAt: "2026-08-13",
@@ -74,7 +74,7 @@ const DEFAULT_PRESETS = {
       id: "page-sp-102",
       title: "IEP 個別化教育計畫會議流程與填寫指引",
       slug: "iep-guidelines",
-      targetSection: "public", // 公開專區
+      targetSection: "public",
       category: "IEP個案管理",
       isPublished: true,
       updatedAt: "2026-08-13",
@@ -96,7 +96,7 @@ const DEFAULT_PRESETS = {
       id: "page-sp-103",
       title: "115學年度身心障礙學生轉介前介入評估流程",
       slug: "referral-process-internal",
-      targetSection: "internal", // 🔒 校內特教業務版面 (需密碼 8523984)
+      targetSection: "internal",
       category: "轉介與輔導",
       isPublished: true,
       updatedAt: "2026-08-13",
@@ -124,6 +124,7 @@ class SpecialEdAppState {
     this.pages = this.loadPages();
     this.links = this.loadLinks();
     this.isUnlocked = sessionStorage.getItem("jian_sp_unlocked") === "true";
+    this.isAdminUnlocked = sessionStorage.getItem("jian_sp_admin_unlocked") === "true";
   }
 
   loadPages() {
@@ -155,6 +156,15 @@ class SpecialEdAppState {
     if (password === "8523984") {
       this.isUnlocked = true;
       sessionStorage.setItem("jian_sp_unlocked", "true");
+      return true;
+    }
+    return false;
+  }
+
+  unlockAdmin(password) {
+    if (password === "8523984") {
+      this.isAdminUnlocked = true;
+      sessionStorage.setItem("jian_sp_admin_unlocked", "true");
       return true;
     }
     return false;
@@ -227,7 +237,7 @@ function initIcons() {
   }
 }
 
-// Router Manager (#home, #links, #internal, #page/:slug)
+// Router Manager (#home, #internal, #page/:slug)
 function initRouter() {
   window.addEventListener("hashchange", handleRouteChange);
   handleRouteChange();
@@ -245,17 +255,13 @@ function handleRouteChange() {
     const slug = hash.replace("#page/", "");
     renderDynamicPageView(slug);
     document.getElementById("viewPage").classList.add("active");
-  } else if (hash === "#links") {
-    renderLinksView();
-    document.getElementById("viewLinks").classList.add("active");
-    const linkNav = document.querySelector('[data-route="links"]');
-    if (linkNav) linkNav.classList.add("active");
   } else if (hash === "#internal") {
     renderInternalView();
     document.getElementById("viewInternal").classList.add("active");
     const internalNav = document.querySelector('[data-route="internal"]');
     if (internalNav) internalNav.classList.add("active");
   } else {
+    // 預設與未指定路由皆導向首頁 (包含舊的 #links 路由)
     renderHomeView();
     document.getElementById("viewHome").classList.add("active");
     const homeNav = document.querySelector('[data-route="home"]');
@@ -269,11 +275,15 @@ function handleRouteChange() {
 function renderApp() {
   renderNavDropdowns();
   renderHomeStats();
-  renderHomeQuickLinks();
   renderHomePinnedLinks();
   renderHomePages();
-  renderAllLinks();
   updateAdminTables();
+}
+
+function renderHomeView() {
+  renderHomeStats();
+  renderHomePinnedLinks();
+  renderHomePages();
 }
 
 // 導覽列動態下拉選單 (僅顯示 targetSection === 'public' 之公開網頁)
@@ -299,35 +309,14 @@ function renderNavDropdowns() {
   initIcons();
 }
 
-// 首頁數據與捷徑卡片
+// 首頁數據與統計
 function renderHomeStats() {
   document.getElementById("statLinksCount").innerText = appState.links.length;
   document.getElementById("statPagesCount").innerText = appState.pages.filter(p => p.isPublished && (p.targetSection === "public" || !p.targetSection)).length;
   document.getElementById("statInternalPagesCount").innerText = appState.pages.filter(p => p.targetSection === "internal").length;
 }
 
-function renderHomeQuickLinks() {
-  const quickItems = [
-    { title: "🔒 校內特教業務版面", desc: "輸入密碼 8523984 查看校內轉介評估與特教會議紀錄", icon: "shield-lock", link: "#internal", highlight: true },
-    { title: "教育部全國特教通報網", desc: "通報學童特教資格、鑑定安置與公務填報", icon: "shield-check", link: "https://www.set.edu.tw", isExternal: true },
-    { title: "花蓮縣特教資源網", desc: "花蓮縣物理/職能/語言治療專團線上申請", icon: "activity", link: "https://special.hlc.edu.tw", isExternal: true },
-    { title: "全國教師在職進修網", desc: "特教研習時數查詢與法定 36 小時研習報名", icon: "book-open", link: "https://www1.inservice.edu.tw/", isExternal: true }
-  ];
-
-  const grid = document.getElementById("quickLinksGrid");
-  grid.innerHTML = quickItems.map(item => `
-    <a href="${item.link}" ${item.isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="quick-card shadow-sm ${item.highlight ? 'border-warning' : ''}">
-      <div class="quick-card-icon" style="${item.highlight ? 'background:#feebc8; color:#c05621;' : ''}"><i data-lucide="${item.icon}"></i></div>
-      <div class="quick-card-info">
-        <h3>${item.title}</h3>
-        <p>${item.desc}</p>
-      </div>
-    </a>
-  `).join("");
-  initIcons();
-}
-
-// 首頁 4 大核心特教門戶
+// 首頁 4 大核心特教門戶版面
 function renderHomePinnedLinks() {
   const grid = document.getElementById("homePinnedLinksGrid");
   grid.innerHTML = appState.links.map(link => buildLinkCardHtml(link)).join("");
@@ -357,29 +346,6 @@ function renderHomePages() {
       </div>
     </div>
   `).join("");
-  initIcons();
-}
-
-// 核心連結大廳 (Links View)
-function renderAllLinks(searchQuery = "") {
-  let filtered = appState.links;
-
-  if (searchQuery.trim() !== "") {
-    const q = searchQuery.toLowerCase();
-    filtered = filtered.filter(l => 
-      l.title.toLowerCase().includes(q) || 
-      l.description.toLowerCase().includes(q) ||
-      l.category.toLowerCase().includes(q)
-    );
-  }
-
-  const grid = document.getElementById("allLinksGrid");
-  if (filtered.length === 0) {
-    grid.innerHTML = `<p class="text-muted" style="grid-column: 1/-1; text-align: center; padding: 2rem;">找不到符合「${escapeHtml(searchQuery)}」的核心特教連結。</p>`;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(link => buildLinkCardHtml(link)).join("");
   initIcons();
 }
 
@@ -419,7 +385,7 @@ function initInternalPasswordModule() {
       renderInternalView();
       alert("密碼驗證成功！已成功解鎖校內特教業務版面。");
     } else {
-      alert("密碼錯誤！解鎖失敗。（預設密碼為 8523984）");
+      alert("密碼錯誤！無法解鎖校內特教業務版面。");
       passInput.value = "";
       passInput.focus();
     }
@@ -428,7 +394,7 @@ function initInternalPasswordModule() {
   relockBtn.onclick = () => {
     appState.lockInternal();
     renderInternalView();
-    alert("已成功重新鎖定校內特教業務版面。");
+    alert("已重新鎖定校內特教業務版面。");
   };
 }
 
@@ -441,10 +407,9 @@ function renderInternalView() {
     passwordCard.classList.add("hidden");
     unlockedContent.classList.remove("hidden");
 
-    // 渲染校內特教專屬動態網頁 (targetSection === 'internal')
     const internalPages = appState.pages.filter(p => p.targetSection === "internal");
     if (internalPages.length === 0) {
-      pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁。可在後台新增網頁並選擇「校內特教業務版面」。</p>`;
+      pagesGrid.innerHTML = `<p class="text-muted" style="grid-column:1/-1;">目前尚無專屬於校內特教業務版面的網頁。可在管理控制台新增網頁並選擇「校內特教業務版面」。</p>`;
     } else {
       pagesGrid.innerHTML = internalPages.map(page => `
         <div class="page-card shadow-sm border-warning">
@@ -489,7 +454,6 @@ function renderDynamicPageView(slug) {
     return;
   }
 
-  // 權限檢查：若屬於校內業務版面 (targetSection === 'internal') 且未解鎖，提示密碼防護
   if (page.targetSection === "internal" && !appState.isUnlocked) {
     document.getElementById("pageDisplayTitle").innerText = "🔒 密碼保護網頁";
     document.getElementById("pageBreadCategory").innerText = "校內特教業務";
@@ -501,7 +465,7 @@ function renderDynamicPageView(slug) {
       <div style="text-align: center; padding: 3rem 1rem;">
         <i data-lucide="shield-alert" style="width:64px; height:64px; color: var(--warning);"></i>
         <h2 style="margin-top: 1rem;">此頁面為校內特教業務密碼保護文件</h2>
-        <p class="text-muted" style="margin-top: 0.5rem;">您必須先進入「校內特教業務版面」並輸入正確密碼 (8523984) 解鎖後，方可閱讀本文檔。</p>
+        <p class="text-muted" style="margin-top: 0.5rem;">您必須先進入「校內特教業務版面」並輸入正確授權密碼解鎖後，方可閱讀本文檔。</p>
         <a href="#internal" class="btn btn-primary" style="margin-top: 1.5rem;"><i data-lucide="key"></i> 前往校內版面解鎖</a>
       </div>
     `;
@@ -522,7 +486,6 @@ function renderDynamicPageView(slug) {
     sectionBadge.classList.add("hidden");
   }
 
-  // 使用 Marked.js 渲染 Markdown 內容
   if (window.marked) {
     container.innerHTML = marked.parse(page.content);
   } else {
@@ -537,20 +500,50 @@ function renderDynamicPageView(slug) {
   initIcons();
 }
 
-// 6. 後台管理控制台 Modal (Admin Panel Controller)
+// 6. 後台管理控制台 Modal (Admin Panel Controller - 密碼防護 8523984)
 function initAdminModal() {
   const modal = document.getElementById("adminModal");
+  const authModal = document.getElementById("adminAuthModal");
   const openBtn = document.getElementById("openAdminBtn");
   const closeBtn = document.getElementById("closeAdminBtn");
+  const closeAuthBtn = document.getElementById("closeAdminAuthBtn");
+  const authForm = document.getElementById("adminAuthForm");
+  const adminPassInput = document.getElementById("adminPasswordInput");
   const homeCreatePageBtn = document.getElementById("homeCreatePageBtn");
 
-  openBtn.onclick = () => openAdminModal();
-  if (homeCreatePageBtn) homeCreatePageBtn.onclick = () => {
-    openAdminModal("tabPages");
-    showPageForm();
+  // 點擊「管理控制台」按鈕時要求輸入密碼
+  const triggerAdminModal = (defaultTab = "tabPages") => {
+    if (appState.isAdminUnlocked) {
+      openAdminModalDirect(defaultTab);
+    } else {
+      adminPassInput.value = "";
+      authModal.classList.add("active");
+      adminPassInput.focus();
+    }
   };
-  closeBtn.onclick = () => modal.classList.remove("active");
 
+  openBtn.onclick = () => triggerAdminModal();
+  if (homeCreatePageBtn) homeCreatePageBtn.onclick = () => triggerAdminModal("tabPages");
+
+  closeAuthBtn.onclick = () => authModal.classList.remove("active");
+  authModal.onclick = (e) => {
+    if (e.target === authModal) authModal.classList.remove("active");
+  };
+
+  authForm.onsubmit = (e) => {
+    e.preventDefault();
+    const val = adminPassInput.value.trim();
+    if (appState.unlockAdmin(val)) {
+      authModal.classList.remove("active");
+      openAdminModalDirect();
+    } else {
+      alert("密碼錯誤！無法開啟管理控制台。");
+      adminPassInput.value = "";
+      adminPassInput.focus();
+    }
+  };
+
+  closeBtn.onclick = () => modal.classList.remove("active");
   modal.onclick = (e) => {
     if (e.target === modal) modal.classList.remove("active");
   };
@@ -565,20 +558,18 @@ function initAdminModal() {
     };
   });
 
-  const searchInput = document.getElementById("linksSearchInput");
-  searchInput.oninput = () => renderAllLinks(searchInput.value);
-
   const homeSearchInput = document.getElementById("homeSearchInput");
   const homeSearchBtn = document.getElementById("homeSearchBtn");
 
   const executeHomeSearch = () => {
-    const val = homeSearchInput.value.trim();
+    const val = homeSearchInput.value.trim().toLowerCase();
     if (val) {
-      window.location.hash = "#links";
-      setTimeout(() => {
-        document.getElementById("linksSearchInput").value = val;
-        renderAllLinks(val);
-      }, 100);
+      const matchPage = appState.pages.find(p => p.title.toLowerCase().includes(val) || p.slug.toLowerCase().includes(val));
+      if (matchPage) {
+        window.location.hash = `#page/${matchPage.slug}`;
+      } else {
+        alert(`搜尋「${val}」：未找到完全匹配的標題，請參閱首頁導師專區與核心連結。`);
+      }
     }
   };
 
@@ -604,7 +595,6 @@ function initAdminModal() {
     };
   });
 
-  // 表單提交事件 (Page Form Submit)
   document.getElementById("pageForm").onsubmit = (e) => {
     e.preventDefault();
     const pageData = {
@@ -623,7 +613,6 @@ function initAdminModal() {
     alert(`特教網頁已儲存！已成功歸類至「${pageData.targetSection === 'internal' ? '🔒 校內特教業務版面' : '🌐 網站連結庫 / 公開特教專區'}」。`);
   };
 
-  // 表單提交事件 (Link Form Submit)
   document.getElementById("linkForm").onsubmit = (e) => {
     e.preventDefault();
     const linkData = {
@@ -641,7 +630,6 @@ function initAdminModal() {
     alert("核心特教連結已儲存！");
   };
 
-  // 備份與還原功能
   document.getElementById("btnExportBackup").onclick = exportBackupJson;
   document.getElementById("btnTriggerImport").onclick = () => document.getElementById("importJsonFile").click();
   document.getElementById("importJsonFile").onchange = importBackupJson;
@@ -654,7 +642,7 @@ function initAdminModal() {
   };
 }
 
-function openAdminModal(defaultTab = "tabPages") {
+function openAdminModalDirect(defaultTab = "tabPages") {
   const modal = document.getElementById("adminModal");
   modal.classList.add("active");
   updateAdminTables();
@@ -772,7 +760,7 @@ window.deleteAdminLink = function(id) {
 function exportBackupJson() {
   const backupData = {
     appName: "jian-es-special-ed-admin",
-    version: "1.0.0",
+    version: "1.1.0",
     exportedAt: new Date().toISOString(),
     pages: appState.pages,
     links: appState.links

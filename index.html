@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>花蓮縣吉安國民小學 - 特教行政資訊網</title>
-  <meta name="description" content="花蓮縣吉安國小特教行政網站，提供核心特教連結、校內特教業務密碼防護版面與自訂動態特教網頁。">
+  <meta name="description" content="花蓮縣吉安國小特教行政網站，提供特教核心連結、導師專區、校內特教業務密碼防護版面與自訂動態特教網頁。">
   <!-- 資安防護 Content Security Policy (CSP) -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://cdn.jsdelivr.net; img-src 'self' data: https:; object-src 'none';">
   
@@ -19,7 +19,7 @@
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
 
-  <!-- 頂部導覽列 (Navbar) -->
+  <!-- 頂部導覽列 (Navbar - 已移除冗餘之特教核心連結) -->
   <header class="navbar" data-openspec-component="navbar">
     <div class="nav-container">
       <a href="#home" class="brand">
@@ -32,7 +32,6 @@
 
       <nav class="nav-menu" id="navMenu">
         <a href="#home" class="nav-item active" data-route="home"><i data-lucide="home"></i> 首頁</a>
-        <a href="#links" class="nav-item" data-route="links"><i data-lucide="external-link"></i> 特教核心連結</a>
         
         <!-- 動態分類選單 (僅顯示公開 Public 網頁) -->
         <div class="nav-dropdown" id="dropdownResource">
@@ -57,6 +56,7 @@
       </nav>
 
       <div class="nav-actions">
+        <!-- 管理控制台按鈕 (需要密碼 8523984) -->
         <button class="btn btn-outline btn-sm" id="openAdminBtn">
           <i data-lucide="settings"></i> 管理控制台
         </button>
@@ -80,10 +80,10 @@
             <span class="hero-badge badge-security"><i data-lucide="shield-check"></i> 純前端資安加密防護</span>
           </div>
           <h1>吉安國小特教行政服務網</h1>
-          <p>整合 4 大官方特教核心連結、提供校內特教業務密碼防護版面與自訂特教網頁發布。</p>
+          <p>整合 4 大官方核心特教連結、提供普通班導師專區、校內特教業務密碼防護與自訂特教網頁發布。</p>
           <div class="hero-search">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="text" id="homeSearchInput" placeholder="搜尋核心特教連結、IEP指引、轉介表單或規章..." autocomplete="off">
+            <input type="text" id="homeSearchInput" placeholder="搜尋核心特教連結、導師指引、轉介表單或規章..." autocomplete="off">
             <button class="btn btn-primary" id="homeSearchBtn">搜尋</button>
           </div>
           <div class="hero-stats">
@@ -94,32 +94,59 @@
         </div>
       </div>
 
-      <!-- 核心特教網站連結庫 -->
+      <!-- 1. 核心特教網站連結庫版面 (直接呈現於首頁) -->
       <div class="container section-padding">
-        <div class="section-header space-between">
-          <div>
-            <h2><i data-lucide="bookmark" class="text-primary"></i> 4 大核心特教官方網站連結</h2>
-            <p>教育部與花蓮縣政府官方特教門戶平台</p>
-          </div>
-          <a href="#links" class="btn btn-outline btn-sm">開啟連結庫大廳 <i data-lucide="arrow-right"></i></a>
+        <div class="section-header">
+          <h2><i data-lucide="bookmark" class="text-primary"></i> 4 大核心特教官方網站連結</h2>
+          <p>教育部與花蓮縣政府官方特教門戶平台，提供快速安全跳轉</p>
         </div>
         <div class="links-grid" id="homePinnedLinksGrid">
           <!-- JS 動態渲染 4 大核心連結 -->
         </div>
       </div>
 
-      <!-- 快速捷徑與校內業務面板引導 -->
+      <!-- 2. 🍎 導師專區 (Homeroom Teacher Section - 新增於核心連結下方) -->
       <div class="container section-padding bg-alt">
-        <div class="section-header">
-          <h2><i data-lucide="zap" class="text-accent"></i> 常用特教行政捷徑</h2>
-          <p>提供導師與特教教師最常使用的業務跳轉連結與密碼防護專區</p>
+        <div class="section-header space-between">
+          <div>
+            <h2><i data-lucide="graduation-cap" class="text-warning"></i> 🍎 導師專區 (Homeroom Teacher Section)</h2>
+            <p>專為普通班導師設計之轉介前介入指引、特殊考試服務申請與融合教育實用資源</p>
+          </div>
+          <span class="badge badge-accent">導師專用指引</span>
         </div>
-        <div class="quick-cards-grid" id="quickLinksGrid">
-          <!-- JS 動態渲染卡片 -->
+        <div class="quick-cards-grid" id="teacherSectionGrid">
+          <div class="quick-card shadow-sm border-warning">
+            <div class="quick-card-icon" style="background:#feebc8; color:#c05621;"><i data-lucide="clipboard-edit"></i></div>
+            <div class="quick-card-info">
+              <h3>身心障礙學生轉介前介入指引</h3>
+              <p>包含 6 週觀察介入紀錄表下載、輔導策略調整與個案研討填寫說明。</p>
+            </div>
+          </div>
+          <div class="quick-card shadow-sm">
+            <div class="quick-card-icon" style="background:var(--primary-light); color:var(--primary);"><i data-lucide="file-check-2"></i></div>
+            <div class="quick-card-info">
+              <h3>定期評量特殊考試服務申請</h3>
+              <p>導師幫學童申請延長考試時間 (20%)、獨立試場與試題報讀服務說明。</p>
+            </div>
+          </div>
+          <div class="quick-card shadow-sm">
+            <div class="quick-card-icon" style="background:var(--secondary-light); color:var(--secondary);"><i data-lucide="book-marked"></i></div>
+            <div class="quick-card-info">
+              <h3>融合教育導師實用親師手冊</h3>
+              <p>班級特教生相處技巧、情緒行為介入與親師溝通對話指引。</p>
+            </div>
+          </div>
+          <div class="quick-card shadow-sm">
+            <div class="quick-card-icon" style="background:var(--accent-light); color:var(--accent);"><i data-lucide="eye"></i></div>
+            <div class="quick-card-info">
+              <h3>特教學生身心特質觀察表</h3>
+              <p>學習落後、情緒行為、專注力與語言溝通特質檢核觀察表彙整。</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 公開動態特教網頁 -->
+      <!-- 3. 公開動態特教網頁 -->
       <div class="container section-padding">
         <div class="section-header space-between">
           <div>
@@ -136,29 +163,7 @@
       </div>
     </section>
 
-    <!-- 2. 特教核心連結大廳視圖 (Links View) -->
-    <section id="viewLinks" class="view-section" data-openspec-view="external-links">
-      <div class="container section-padding">
-        <div class="page-header">
-          <div class="breadcrumb"><a href="#home">首頁</a> / <span>特教核心連結</span></div>
-          <h1><i data-lucide="globe"></i> 4 大特教核心官方網站連結</h1>
-          <p>彙整教育部與花蓮縣政府官方特教系統，提供安全跳轉。</p>
-        </div>
-
-        <div class="filter-bar">
-          <div class="search-box">
-            <i data-lucide="search"></i>
-            <input type="text" id="linksSearchInput" placeholder="輸入關鍵字 (如: 通報網, 研習, 資源網)...">
-          </div>
-        </div>
-
-        <div class="links-grid" id="allLinksGrid">
-          <!-- JS 動態渲染 -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. 🔒 校內特教業務版面視圖 (Internal Section View) -->
+    <!-- 2. 🔒 校內特教業務版面視圖 (Internal Section View) -->
     <section id="viewInternal" class="view-section" data-openspec-view="internal-section">
       <div class="container section-padding">
         <div class="page-header">
@@ -167,7 +172,7 @@
           <p>保護吉安國小校內特教個案管理、轉介前介入表格、IEP 記錄與內部會議文件。</p>
         </div>
 
-        <!-- 密碼驗證卡片 (未解鎖時顯示) -->
+        <!-- 密碼驗證卡片 (未解鎖時顯示 - 已刪除原明文密碼提示文字) -->
         <div class="password-card shadow-card" id="internalPasswordCard">
           <div class="password-card-header">
             <div class="lock-circle"><i data-lucide="lock"></i></div>
@@ -179,7 +184,6 @@
               <input type="password" id="internalPasswordInput" placeholder="請輸入 7 位數密碼..." required autocomplete="current-password">
             </div>
             <button type="submit" class="btn btn-primary btn-block"><i data-lucide="key"></i> 驗證解鎖</button>
-            <p class="password-hint text-muted"><i data-lucide="info"></i> 提示：預設密碼為吉安國小電話號碼 (8523984)</p>
           </form>
         </div>
 
@@ -231,7 +235,7 @@
       </div>
     </section>
 
-    <!-- 4. 動態特教網頁視圖 (Dynamic Page View) -->
+    <!-- 3. 動態特教網頁視圖 (Dynamic Page View) -->
     <section id="viewPage" class="view-section" data-openspec-view="dynamic-page">
       <div class="container section-padding">
         <div class="page-header" id="pageHeader">
@@ -256,6 +260,26 @@
     </section>
 
   </main>
+
+  <!-- 管理控制台密碼驗證彈窗 (Admin Auth Modal - 密碼 8523984) -->
+  <div class="modal-overlay" id="adminAuthModal">
+    <div class="modal-card" style="max-width: 420px; padding: 2rem;">
+      <div class="password-card-header" style="margin-bottom: 1rem;">
+        <div class="lock-circle" style="background:#ebf8ff; color:var(--primary);"><i data-lucide="shield-check"></i></div>
+        <h2>管理控制台驗證</h2>
+        <p>進入特教管理控制台需進行授權身分驗證。</p>
+      </div>
+      <form id="adminAuthForm" class="password-form">
+        <div class="form-group">
+          <input type="password" id="adminPasswordInput" placeholder="請輸入 7 位數管理密碼..." required autocomplete="current-password">
+        </div>
+        <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+          <button type="button" class="btn btn-outline btn-block" id="closeAdminAuthBtn">取消</button>
+          <button type="submit" class="btn btn-primary btn-block"><i data-lucide="key"></i> 進入控制台</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- 後台管理控制台 Modal (Admin Panel Modal) -->
   <div class="modal-overlay" id="adminModal" data-openspec-component="admin-panel">
@@ -476,7 +500,6 @@
       </div>
       <div class="footer-links">
         <a href="#home">網站首頁</a>
-        <a href="#links">核心特教連結</a>
         <a href="#internal">🔒 校內特教業務</a>
         <a href="openspec/openspec.json" target="_blank">OpenSpec 規範宣告</a>
       </div>

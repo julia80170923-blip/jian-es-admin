@@ -265,12 +265,31 @@ document.addEventListener("DOMContentLoaded", () => {
   initAdminModal();
   initInternalPasswordModule();
   initUndoToast();
+  initMobileMenu();
 });
 
 function initIcons() {
   if (window.lucide) {
     lucide.createIcons();
   }
+}
+
+// 手機版側滑抽屜選單控制 (RWD Mobile Drawer)
+function initMobileMenu() {
+  const toggleBtn = document.getElementById("mobileToggleBtn");
+  const navMenu = document.getElementById("navMenu");
+  if (!toggleBtn || !navMenu) return;
+
+  toggleBtn.onclick = () => {
+    navMenu.classList.toggle("mobile-active");
+  };
+
+  // 點選任何選單項目時，自動平滑收合手機版選單
+  navMenu.querySelectorAll("a").forEach(item => {
+    item.onclick = () => {
+      navMenu.classList.remove("mobile-active");
+    };
+  });
 }
 
 let undoTimer = null;

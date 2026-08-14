@@ -1232,13 +1232,139 @@ body {
 .text-warning { color: var(--warning); }
 .hidden { display: none !important; }
 
-/* 響應式調整 (RWD) */
+/* ----------------------------------------------------
+   全裝置響應式與自適應設計 (RWD System)
+---------------------------------------------------- */
+@media (max-width: 992px) {
+  .hero-banner { padding: 2.5rem 1.25rem; }
+  .hero-content h1 { font-size: 1.85rem; }
+  .hero-stats { gap: 1.5rem; }
+  .modal-card { width: 95%; max-height: 92vh; }
+}
+
 @media (max-width: 768px) {
-  .nav-menu { display: none; }
-  .mobile-toggle { display: block; }
-  .hero-content h1 { font-size: 1.75rem; }
-  .hero-stats { flex-direction: column; gap: 1rem; }
-  .form-row { grid-template-columns: 1fr; }
-  .modal-card { max-height: 95vh; }
-  .markdown-body iframe { min-height: 450px; }
+  .nav-container { padding: 0.6rem 1rem; }
+  .nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    gap: 0.6rem;
+    align-items: stretch;
+    z-index: 500;
+  }
+  
+  .nav-menu.mobile-active {
+    display: flex;
+    animation: slideDownNav 0.25s ease-out;
+  }
+
+  @keyframes slideDownNav {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .nav-item {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    justify-content: flex-start;
+  }
+
+  .mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+  }
+  .mobile-toggle:hover {
+    background: var(--bg-alt);
+  }
+
+  .hero-search {
+    position: relative;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .hero-search input {
+    width: 100%;
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .hero-search .search-icon {
+    position: absolute;
+    top: 1rem;
+    left: 0.85rem;
+    z-index: 2;
+  }
+
+  .hero-search button {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+  }
+
+  .quick-cards-grid, .links-grid, .pages-grid, .backup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header.space-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    min-width: 620px;
+  }
+
+  .markdown-body iframe {
+    height: clamp(350px, 50vh, 500px);
+  }
+
+  .toast-undo-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-icon { width: 36px; height: 36px; }
+  .site-title { font-size: 0.95rem; }
+  .school-name { font-size: 0.7rem; }
+  .hero-content h1 { font-size: 1.45rem; }
+  .hero-content p { font-size: 0.95rem; margin-bottom: 1.25rem; }
+  .hero-badges { gap: 0.4rem; }
+  .hero-badge { font-size: 0.75rem; padding: 0.25rem 0.6rem; }
+  .hero-stats { flex-direction: column; gap: 0.75rem; }
+  .shadow-card { padding: 1.25rem; }
+  .password-card { padding: 1.5rem 1rem; }
+  .modal-body { padding: 1rem; }
+  .modal-tabs { padding: 0 0.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab-btn { padding: 0.75rem 0.65rem; font-size: 0.85rem; white-space: nowrap; }
 }

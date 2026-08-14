@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>花蓮縣吉安國民小學 - 特教行政資訊網</title>
   <meta name="description" content="花蓮縣吉安國小特教行政網站，提供特教核心連結、導師專區、校內特教業務密碼防護版面與自訂動態特教網頁。">
   <!-- 資安防護 Content Security Policy (CSP) -->
@@ -15,7 +15,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Marked.js for Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260814_01">
+  <link rel="stylesheet" href="styles.css?v=20260814_02">
 </head>
 <body data-openspec-app="jian-es-special-ed-admin">
 
@@ -25,7 +25,7 @@
     <button class="btn btn-sm btn-accent" id="btnUndoDelete"><i data-lucide="rotate-ccw"></i> ↶ 立即復原 (Undo)</button>
   </div>
 
-  <!-- 頂部導覽列 (極簡導覽列：僅保留首頁與校內特教業務) -->
+  <!-- 頂部導覽列 -->
   <header class="navbar" data-openspec-component="navbar">
     <div class="nav-container">
       <a href="#home" class="brand">
@@ -36,6 +36,7 @@
         </div>
       </a>
 
+      <!-- 導覽選單與手機抽屜選單 -->
       <nav class="nav-menu" id="navMenu">
         <a href="#home" class="nav-item active" data-route="home"><i data-lucide="home"></i> 首頁</a>
         
@@ -43,13 +44,19 @@
         <a href="#internal" class="nav-item nav-internal-item" data-route="internal">
           <i data-lucide="lock" class="text-warning"></i> 校內特教業務
         </a>
+
+        <!-- 手機版選單抽屜專用之管理控制台選項 -->
+        <button class="nav-item mobile-admin-nav-item" id="mobileOpenAdminBtn">
+          <i data-lucide="settings"></i> 管理控制台
+        </button>
       </nav>
 
       <div class="nav-actions">
-        <!-- 管理控制台按鈕 (密碼 8523984) -->
-        <button class="btn btn-outline btn-sm" id="openAdminBtn">
+        <!-- 桌機版管理控制台按鈕 (手機版隱藏並收納至三條橫線選單中) -->
+        <button class="btn btn-outline btn-sm desktop-only-admin" id="openAdminBtn">
           <i data-lucide="settings"></i> 管理控制台
         </button>
+        <!-- 手機版大尺寸 48px 三條橫線漢堡按鈕 -->
         <button class="mobile-toggle" id="mobileToggleBtn" aria-label="選單">
           <i data-lucide="menu"></i>
         </button>
@@ -452,6 +459,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260814_01"></script>
+  <script src="app.js?v=20260814_02"></script>
 </body>
 </html>

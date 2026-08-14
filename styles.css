@@ -1235,6 +1235,10 @@ body {
 /* ----------------------------------------------------
    全裝置響應式與自適應設計 (RWD System)
 ---------------------------------------------------- */
+.mobile-admin-nav-item {
+  display: none;
+}
+
 @media (max-width: 992px) {
   .hero-banner { padding: 2.5rem 1.25rem; }
   .hero-content h1 { font-size: 1.85rem; }
@@ -1243,7 +1247,41 @@ body {
 }
 
 @media (max-width: 768px) {
-  .nav-container { padding: 0.6rem 1rem; }
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    overflow: visible !important;
+  }
+
+  .nav-container {
+    padding: 0.6rem 1rem;
+    position: relative;
+    overflow: visible !important;
+    justify-content: space-between;
+  }
+
+  .desktop-only-admin {
+    display: none !important;
+  }
+
+  .mobile-admin-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    background: var(--primary-light);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-top: 0.5rem;
+    cursor: pointer;
+  }
+
   .nav-menu {
     display: none;
     position: absolute;
@@ -1252,16 +1290,16 @@ body {
     right: 0;
     background: white;
     flex-direction: column;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
-    gap: 0.6rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 3px solid var(--primary);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    gap: 0.75rem;
     align-items: stretch;
-    z-index: 500;
+    z-index: 9999;
   }
   
   .nav-menu.mobile-active {
-    display: flex;
+    display: flex !important;
     animation: slideDownNav 0.25s ease-out;
   }
 
@@ -1271,23 +1309,31 @@ body {
   }
 
   .nav-item {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
+    padding: 0.85rem 1rem;
+    font-size: 1.05rem;
     justify-content: flex-start;
+    border-radius: var(--radius-md);
+    background: var(--bg-main);
   }
 
   .mobile-toggle {
-    display: inline-flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    font-size: 1.5rem;
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-  }
-  .mobile-toggle:hover {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    font-size: 1.6rem;
+    border-radius: var(--radius-md);
+    color: var(--primary);
     background: var(--bg-alt);
+    border: 1px solid var(--border);
+    margin-left: auto;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  .mobile-toggle:active {
+    background: var(--primary-light);
   }
 
   .hero-search {

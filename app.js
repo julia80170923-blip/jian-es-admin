@@ -278,11 +278,25 @@ function initIcons() {
 function initMobileMenu() {
   const toggleBtn = document.getElementById("mobileToggleBtn");
   const navMenu = document.getElementById("navMenu");
+  const mobileAdminBtn = document.getElementById("mobileOpenAdminBtn");
   if (!toggleBtn || !navMenu) return;
 
-  toggleBtn.onclick = () => {
+  const handleToggle = (e) => {
+    if (e) e.preventDefault();
     navMenu.classList.toggle("mobile-active");
   };
+
+  toggleBtn.onclick = handleToggle;
+
+  // 手機版選單內點擊管理控制台時
+  if (mobileAdminBtn) {
+    mobileAdminBtn.onclick = (e) => {
+      e.preventDefault();
+      navMenu.classList.remove("mobile-active");
+      const openAdminBtn = document.getElementById("openAdminBtn");
+      if (openAdminBtn) openAdminBtn.click();
+    };
+  }
 
   // 點選任何選單項目時，自動平滑收合手機版選單
   navMenu.querySelectorAll("a").forEach(item => {

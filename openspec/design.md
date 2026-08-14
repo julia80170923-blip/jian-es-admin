@@ -16,16 +16,18 @@
 |                                                                       |
 |  +-----------------------------------------------------------------+  |
 |  |      🔒 密碼驗證管理控制台 (Admin Modal - Password: 8523984)    |  |
-|  |   - 全裝置 RWD Breakpoints (320px, 480px, 768px, 992px, 1200px)   |  |
-|  |   - 手機版漢堡抽屜選單 (#mobileToggleBtn & .mobile-open)            |  |
-|  |   - iframe 動態自適應視窗 (height: clamp(380px, 55vh, 650px))     |  |
+|  |   - 手機版獨立漢堡按鈕 (#mobileToggleBtn 48x48px Touch Area)      |  |
+|  |   - 手機抽屜選單包含: 首頁 | 校內特教業務 | 管理控制台              |  |
 |  +-----------------------------------------------------------------+  |
 +-----------------------------------------------------------------------+
 ```
 
-## RWD 媒體查詢與斷點設計 (Responsive Breakpoints Schema)
-- `xs` (**< 480px**): 超小手機屏。標題字級調小，搜尋欄單欄堆疊，表格平滑橫向滑動。
-- `sm` (**481px - 768px**): 平板豎屏 / 大螢幕手機。側滑抽屜選單，卡片雙欄流動網格。
-- `md` (**769px - 992px**): 平板橫屏 / 小筆電。呈現完整 Desktop 導覽列，Modal 寬度 90%。
-- `lg` (**993px - 1200px**): 標準桌機。網格三欄平鋪。
-- `xl` (**> 1200px**): 大螢幕視點。最高置中容器上限 1200px。
+## 前端 UI 元件結構 (Mobile Component Tree)
+- `Navbar` (`.navbar`):
+  - Desktop View: Logo + Brand Title | Nav Items (`首頁`, `🔒 校內特教業務`) | `⚙️ 管理控制台`
+  - Mobile View (`< 768px`):
+    - Header Bar: Logo + Short Brand Title | **三條橫線按鈕 (`#mobileToggleBtn`)**
+    - Drawer Menu (`#navMenu.mobile-active`):
+      - 🏠 **首頁** (`#home`)
+      - 🔒 **校內特教業務** (`#internal`)
+      - ⚙️ **管理控制台** (`#mobileOpenAdminBtn`)
